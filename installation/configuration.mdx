@@ -33,7 +33,7 @@ The usual Laravel options (`APP_URL`, `DB_*`, `REDIS_*`, `MAIL_*`) work as in an
 | `/etc/nginx/sites-available/laravelify-{slug}.conf` | Each site's nginx file |
 | `/etc/nginx/laravelify-security/{slug}.conf` | Security rules, blocked IPs, request log (per site) |
 | `/etc/supervisor/conf.d/laravelify-{slug}.conf` | Each Laravel site's workers |
-| `/var/www/{slug}/ecosystem.config.js` | Each Next.js site's PM2 file |
+| `/var/www/{slug}/ecosystem.config.cjs` | Each Next.js site's PM2 file |
 | `/var/log/laravelify/{slug}.metrics.log` | Request log for Monitoring (rotated daily) |
 | `/etc/cloudflared/laravelify-{slug}.yml` | Each tunnel's config |
 | `/etc/sudoers.d/laravelify` | Lets the panel run `host-apply.sh` as root |
