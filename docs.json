@@ -101,6 +101,12 @@
         ]
       },
       {
+        "group": "Backups",
+        "pages": [
+          "backups/backups"
+        ]
+      },
+      {
         "group": "Monitoring & alerts",
         "pages": [
           "monitoring/overview",

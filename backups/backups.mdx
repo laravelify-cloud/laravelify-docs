@@ -1,0 +1,96 @@
+---
+title: "Backups to S3"
+description: "Back up databases and folders to your own S3 bucket on a schedule, and restore a whole database, one table, or one folder."
+---
+
+Laravelify backs up to **a bucket you own**: Amazon S3, DigitalOcean Spaces, Cloudflare R2, Backblaze B2, Wasabi, or MinIO. Nothing is sent anywhere else, and the access keys are stored encrypted.
+
+Everything lives under **Backups** in the sidebar:
+
+| Page | What it does |
+| --- | --- |
+| **Databases** | Schedules for MySQL databases, the list of backups, and restores |
+| **Files** | Schedules for folders (with excludes), the list of backups, and restores |
+| **S3 storage** | The buckets backups go to |
+
+<Note>
+  Backups use `rclone`, which the installer adds. On a server installed before backups existed, run the update and it is installed for you.
+</Note>
+
+## 1. Add S3 storage
+
+Open **Backups, S3 storage, Add storage**, choose your provider, and fill in the bucket and the keys. Laravelify writes a small test file and removes it, so you know right away whether the keys work.
+
+| Provider | Endpoint | Region |
+| --- | --- | --- |
+| Amazon S3 | empty | like `eu-west-1` |
+| DigitalOcean Spaces | `https://nyc3.digitaloceanspaces.com` | the Space region, like `nyc3` |
+| Cloudflare R2 | `https://ACCOUNT_ID.r2.cloudflarestorage.com` | `auto` |
+| Backblaze B2 | `https://s3.us-west-004.backblazeb2.com` | like `us-west-004` |
+| Wasabi | `https://s3.us-east-1.wasabisys.com` | your region |
+| MinIO and others | your endpoint | any |
+
+The keys need read, write, and delete access to the bucket. The first storage you add becomes the default.
+
+## 2. Back up databases
+
+**Backups, Databases, New schedule.**
+
+- Pick **All databases** (including ones added later), or tick the databases you want. Each database is dumped on its own.
+- Choose how often: every few minutes, every hour, every few hours, every day, every week, or a custom cron expression.
+- Choose how many backups to **keep**. Older ones are deleted from the bucket after each run, and the newest one is always kept.
+
+Want `app_db` every hour and everything else once a day? Make two schedules.
+
+The empty page offers two shortcuts: **all databases every hour** and **all databases every day**.
+
+Press **Run now** on a schedule to make a backup immediately. The list shows progress and a log for each run.
+
+## 3. Back up folders
+
+**Backups, Files, New schedule.** Browse the folders inside `/var/www`, add as many as you like, and list what to **skip**: `node_modules`, `vendor`, `.git`, `storage/logs`, or any pattern. A name matches in every folder. The folders are packed into one `tar.gz` per run.
+
+## 4. Restore
+
+Press **Restore** next to any backup that is still in the bucket.
+
+<Tabs>
+  <Tab title="Database">
+    - **Whole database**, or **some tables** picked from the list in that backup.
+    - Choose the database to restore into. The same name overwrites the live data. A new name restores next to it, and the database is created if it does not exist.
+    - You confirm with a checkbox before anything is overwritten.
+  </Tab>
+  <Tab title="Files">
+    - **Everything**, or **one folder** from the backup.
+    - **A new restore folder** (the default) unpacks into `laravelify-restore/<date>` and overwrites nothing. **Original place** puts files back where they were, overwriting files with the same name, and asks you to confirm.
+  </Tab>
+</Tabs>
+
+## Alerts
+
+In **Settings, Telegram bot**, **A backup or restore failed** is on by default, and **A backup finished** can be switched on.
+
+## Good to know
+
+- Times use the timezone from **Settings, General**.
+- Deleting a schedule does not delete the backups it made. Delete a backup from the list to remove its file from the bucket.
+- Backups run in the queue worker, so a long backup does not slow the panel.
+- A restore of a database needs the same MySQL login the panel uses, which is already set up by the installer.
+
+<Tip>
+  Test a restore before you need one. Restore a database into a new name, open it in phpMyAdmin, and check the data.
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Storage test says rclone is not installed">
+    Run the update (`sudo bash /opt/laravelify/scripts/update.sh`) or install it: `sudo apt-get install -y rclone`.
+  </Accordion>
+  <Accordion title="The access key or secret key is wrong / Access denied">
+    Check the keys and that they can write and delete in this bucket. For R2, create an API token with Object Read and Write.
+  </Accordion>
+  <Accordion title="The bucket does not exist">
+    Create the bucket in your provider first. Laravelify does not create buckets. Also check the region.
+  </Accordion>
+</AccordionGroup>
