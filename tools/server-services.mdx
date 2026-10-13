@@ -1,0 +1,20 @@
+---
+title: "Server services"
+description: "MySQL, Redis, phpMyAdmin, PHP-FPM, ports, and processes."
+---
+
+**Sidebar → Server** lists the host services and their status. Open one to edit its config and apply it.
+
+| Service | What applying writes |
+| --- | --- |
+| MySQL 8.4 LTS | `/etc/mysql/mysql.conf.d/laravelify.cnf`, then restarts MySQL |
+| Redis | `/etc/redis/laravelify.conf` (included from `redis.conf`), then restarts Redis. Set a password here |
+| phpMyAdmin | Its nginx file, then reloads nginx |
+| PHP-FPM 8.0–8.5 | `/etc/php/{version}/fpm/pool.d/www.conf`, then restarts that PHP-FPM |
+
+Sites use the PHP socket `unix:/run/php/php{version}-fpm.sock` of their version.
+
+## Ports and processes
+
+- **Server → Ports** shows which ports are in use and by which site.
+- **Server → Processes** lists every Supervisor program and PM2 app on the server, with restart, start, stop, and logs.

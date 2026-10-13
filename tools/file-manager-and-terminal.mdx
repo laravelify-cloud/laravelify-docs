@@ -1,0 +1,29 @@
+---
+title: "File manager and terminal"
+description: "Edit files and run commands without SSH."
+---
+
+## File manager
+
+Every website has a **Files** tab, and the sidebar's **File manager** opens all sites (`/var/www`, or the folder set by `LARAVELIFY_FILES_ROOT`).
+
+- Browse with breadcrumbs or type a path; the path is kept in the URL.
+- Open text files in an editor with word wrap and full-screen mode; save with <kbd>Ctrl</kbd>+<kbd>S</kbd>.
+- Upload files, download files or folders, create, rename, move, and delete (deleting asks you to type the name).
+- Saving a Laravel `.env` clears the cached config so the change applies.
+
+## Terminal
+
+Every website has a **Terminal** tab (it starts in the site folder) and the sidebar's **Terminal** works across all sites.
+
+Type `/` for autocomplete of Artisan commands, PM2 commands (`pm2 status`, `pm2 restart`, `pm2 logs`), Supervisor commands, and useful server commands.
+
+Commands run as `www-data` in a sandbox: the rest of the system is read-only, `/tmp` is private, and each command stops after 60 seconds. Use SSH for long or interactive tasks.
+
+## phpMyAdmin
+
+**Sidebar → phpMyAdmin** signs you in with one click, using a one-time link valid for 60 seconds. phpMyAdmin also keeps its normal password sign-in (user `root`, your MySQL root password).
+
+## Links
+
+**Settings → Links** adds your own shortcuts to the sidebar (Cloudflare dashboard, mail, analytics).

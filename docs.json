@@ -1,0 +1,150 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Laravelify",
+  "description": "Self-hosted deploys for Laravel and Next.js on your own Ubuntu server.",
+  "colors": {
+    "primary": "#6B16ED",
+    "light": "#FCD452",
+    "dark": "#6B16ED"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "/"
+  },
+  "fonts": {
+    "family": "Instrument Sans"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "decoration": "gradient"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Website",
+        "href": "https://laravelify.cloud"
+      },
+      {
+        "label": "Issues",
+        "href": "https://github.com/laravelify-cloud/laravelify/issues"
+      }
+    ],
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/laravelify-cloud/laravelify"
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "icon": "github",
+          "href": "https://github.com/laravelify-cloud/laravelify"
+        },
+        {
+          "anchor": "Issues",
+          "icon": "bug",
+          "href": "https://github.com/laravelify-cloud/laravelify/issues"
+        }
+      ]
+    },
+    "groups": [
+      {
+        "group": "Getting started",
+        "pages": [
+          "introduction",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Installation",
+        "pages": [
+          "installation/requirements",
+          "installation/install",
+          "installation/configuration",
+          "installation/updating",
+          "installation/uninstall"
+        ]
+      },
+      {
+        "group": "Concepts",
+        "pages": [
+          "concepts/architecture",
+          "concepts/features"
+        ]
+      },
+      {
+        "group": "Websites",
+        "pages": [
+          "websites/groups-and-websites",
+          "websites/laravel",
+          "websites/nextjs",
+          "websites/github",
+          "websites/environment-nginx-processes",
+          "websites/cloudflare-tunnels"
+        ]
+      },
+      {
+        "group": "Monitoring & alerts",
+        "pages": [
+          "monitoring/overview",
+          "monitoring/server",
+          "monitoring/heartbeats",
+          "monitoring/telegram"
+        ]
+      },
+      {
+        "group": "Security",
+        "pages": [
+          "security/authentication",
+          "security/site-security"
+        ]
+      },
+      {
+        "group": "Tools",
+        "pages": [
+          "tools/file-manager-and-terminal",
+          "tools/logs-and-health",
+          "tools/server-services",
+          "tools/settings"
+        ]
+      },
+      {
+        "group": "Help",
+        "pages": [
+          "troubleshooting",
+          "contributing"
+        ]
+      }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "og:image": "/images/og-image.png"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/laravelify-cloud/laravelify",
+      "website": "https://laravelify.cloud"
+    }
+  },
+  "banner": {
+    "content": "Laravelify is in **public beta**. Try it on a test server first and [report what breaks](https://github.com/laravelify-cloud/laravelify/issues).",
+    "dismissible": true
+  }
+}

@@ -1,0 +1,42 @@
+---
+title: "Site security"
+description: "Search engines, crawlers, basic auth, and blocked IPs per website."
+---
+
+Each website's **Security** tab writes nginx rules for that site only. Saving reloads nginx; workers keep running.
+
+## Hide from search engines
+
+Sends `X-Robots-Tag: noindex, nofollow` on every response and serves a `robots.txt` that disallows everything (unless your nginx file already serves one). Use it for staging sites, admin panels, and APIs.
+
+## Refuse known crawlers
+
+Answers `403` to search engine, SEO, and AI crawlers: Googlebot, Bingbot, Yandex, Baidu, Ahrefs, Semrush, GPTBot, ClaudeBot, CCBot, Bytespider, and more. Link previews in Telegram, WhatsApp, Slack, and Facebook keep working.
+
+## Basic auth
+
+Asks for a username and password before anyone can open the site. Add paths that stay open (one per line, prefix match), for example APIs and webhooks that servers call without a browser:
+
+```text
+/api/
+/hooks/
+/socket.io/
+```
+
+`/.well-known/acme-challenge/` is always open. The password is stored as a SHA-512 crypt hash for nginx, plus encrypted so you can reveal it later with your 2FA code.
+
+## Blocked IPs
+
+IPs and CIDR ranges (IPv4 or IPv6), one per line, answered with `403`:
+
+```text
+203.0.113.7
+198.51.100.0/24
+2001:db8::/32
+```
+
+Blocking uses the visitor's real IP, also behind a Cloudflare tunnel (`CF-Connecting-IP` is trusted only from the local tunnel). You can block an attacker in one click from **Monitoring → Security**.
+
+<Tip>
+  For blocking at Cloudflare's edge (before traffic reaches your server), add the IP to a WAF rule in the Cloudflare dashboard.
+</Tip>

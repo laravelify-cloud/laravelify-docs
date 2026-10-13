@@ -1,0 +1,38 @@
+---
+title: "Uninstall"
+description: "Remove Laravelify from a server, completely or only the panel."
+---
+
+## Remove everything
+
+```bash
+sudo bash /opt/laravelify/scripts/uninstall.sh
+```
+
+You are asked to type `uninstall` to confirm. The script stops and removes the panel, **every Laravelify site under `/var/www`**, their nginx files, workers and PM2 apps, the Cloudflare tunnels, and the packages the installer added (nginx, MySQL, Redis, PHP-FPM, Node.js, PM2, cloudflared). SSH stays open.
+
+<Warning>
+  This deletes your sites and databases. Back up `/var/www` and your MySQL databases first (`mysqldump --all-databases`).
+</Warning>
+
+## Remove only the panel
+
+To keep your sites running without the panel:
+
+```bash
+# Stop the panel's workers and remove their Supervisor programs
+sudo supervisorctl stop laravelify-queue laravelify-scheduler
+sudo rm -f /etc/supervisor/conf.d/laravelify-panel.conf /etc/supervisor/conf.d/laravelify-scheduler.conf
+sudo supervisorctl reread && sudo supervisorctl update
+
+# Remove the panel's nginx site and sudo rule
+sudo rm -f /etc/nginx/sites-enabled/laravelify-panel.conf /etc/nginx/sites-available/laravelify-panel.conf
+sudo rm -f /etc/sudoers.d/laravelify
+sudo nginx -t && sudo systemctl reload nginx
+
+# Remove the panel and its database
+sudo rm -rf /opt/laravelify
+sudo mysql -e "DROP DATABASE IF EXISTS laravelify;"
+```
+
+Sites keep their nginx files, workers, PM2 apps, and databases, but no longer deploy, monitor, or alert. Monitoring's request logs in `/var/log/laravelify` can be deleted, along with the `include /etc/nginx/laravelify-security/…` line in each site's nginx file if you remove that folder.

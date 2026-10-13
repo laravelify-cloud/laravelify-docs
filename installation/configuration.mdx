@@ -1,0 +1,39 @@
+---
+title: "Configuration"
+description: "The panel's .env options and where things live on the server."
+---
+
+Most settings are changed in the panel itself (**Settings**, **Server**). A few panel-level options live in `/opt/laravelify/.env`. After editing it, run:
+
+```bash
+cd /opt/laravelify && sudo -u www-data php artisan config:clear
+sudo supervisorctl restart laravelify-queue laravelify-scheduler
+```
+
+## Laravelify options
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `LARAVELIFY_SITES_ROOT` | `/var/www` | Where sites are deployed |
+| `LARAVELIFY_FILES_ROOT` | the sites root | Where the global file manager starts. Set `/` to browse the whole server |
+| `LARAVELIFY_METRICS_LOG_DIR` | `/var/log/laravelify` | Where nginx writes the per-site request logs for Monitoring |
+| `LARAVELIFY_DOCS_URL` | the official docs | The **Documentation** link in the sidebar |
+| `LARAVELIFY_REPOSITORY_URL` | the official repository | The **GitHub** link in the sidebar |
+| `LARAVELIFY_HOST_COMMANDS` | on (on Linux) | Set `false` to only write config files without applying them (development) |
+
+The usual Laravel options (`APP_URL`, `DB_*`, `REDIS_*`, `MAIL_*`) work as in any Laravel app. The installer fills them in.
+
+## Where things live
+
+| Path | What |
+| --- | --- |
+| `/opt/laravelify` | The panel |
+| `/opt/laravelify/storage/logs` | Panel logs (`laravel.log`, `panel-queue.log`, `panel-scheduler.log`) |
+| `/var/www/{slug}` | Each website |
+| `/etc/nginx/sites-available/laravelify-{slug}.conf` | Each site's nginx file |
+| `/etc/nginx/laravelify-security/{slug}.conf` | Security rules, blocked IPs, request log (per site) |
+| `/etc/supervisor/conf.d/laravelify-{slug}.conf` | Each Laravel site's workers |
+| `/var/www/{slug}/ecosystem.config.js` | Each Next.js site's PM2 file |
+| `/var/log/laravelify/{slug}.metrics.log` | Request log for Monitoring (rotated daily) |
+| `/etc/cloudflared/laravelify-{slug}.yml` | Each tunnel's config |
+| `/etc/sudoers.d/laravelify` | Lets the panel run `host-apply.sh` as root |

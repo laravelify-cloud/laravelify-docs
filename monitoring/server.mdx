@@ -1,0 +1,30 @@
+---
+title: "Server monitoring"
+description: "CPU, memory, load, network, services, and processes of the server."
+---
+
+**Sidebar → Server monitoring** shows the machine Laravelify runs on.
+
+## Live
+
+Every 2 seconds, measured fresh from `/proc`:
+
+- **CPU** usage and load average
+- **Memory** used of total
+- **Load** (1 minute) against the number of cores
+- **Network** in and out per second
+
+Each has a rolling 3-minute chart. **Top processes** (by CPU) refresh every 6 seconds.
+
+## History
+
+The scheduler stores one sample per minute (CPU, memory, swap, load, disk, network). Pick 1H to 30D to see averages and peaks. Samples older than 30 days are pruned nightly.
+
+## Services
+
+The systemd status of nginx, MySQL, Redis, Supervisor, cloudflared, and every installed PHP-FPM version. A service that is not running shows in red.
+
+## Alerts
+
+- **Disk usage above the limit** (Telegram, default 80%, set under Settings → Telegram).
+- **Server patches available** (daily check of `apt`, with the security-relevant packages listed).

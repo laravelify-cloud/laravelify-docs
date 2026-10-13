@@ -1,0 +1,29 @@
+---
+title: "Logs and health"
+description: "Every log file of a site, and checks that tell you what is wrong."
+---
+
+## Logs
+
+Website → **Logs** lists every log of the site:
+
+| Group | Logs |
+| --- | --- |
+| Application | Laravel (`storage/logs/laravel*.log`), or PM2 output for Next.js |
+| Supervisor | Each worker's log (queue, scheduler, Reverb, your programs) |
+| Other logs | Any other `.log` file in `storage/logs` |
+| nginx | The site's access and error logs |
+
+Follow a log live, search it, wrap lines, copy, or clear it.
+
+## Health
+
+Website → **Health** runs checks and explains each result:
+
+- the site answers over HTTP, and how fast;
+- the last deploy succeeded;
+- every Supervisor worker or the PM2 app is running (with a **Restart** button);
+- recent errors in the Laravel log (with a link to the log);
+- nginx logs are enabled and `nginx -t` passes.
+
+A worker that keeps crashing also sends a Telegram alert.

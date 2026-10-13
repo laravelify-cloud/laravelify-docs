@@ -1,0 +1,52 @@
+---
+title: "Features"
+description: "Everything Laravelify does, in one list."
+---
+
+## Deploy
+
+| Feature | Details |
+| --- | --- |
+| Laravel sites | PHP 8.0–8.5, Composer, migrations, `optimize`, Supervisor workers, optional Reverb |
+| Next.js sites | Node 20/22/24, npm, pnpm, or Yarn (from the lockfile), standalone build, PM2 |
+| GitHub | GitHub App (one click) or personal access token, private repositories |
+| Push to deploy | Webhooks with signature checks, per-branch, auto deploy on/off |
+| Deploy log | Live, step by step, kept per deployment; stop a running deploy |
+| Databases | One click MySQL database and user per site, filled into `.env` |
+| Environment | `.env` editor; saving clears the cached config so changes apply |
+| nginx and processes | Editable nginx, Supervisor, and PM2 files with templates and `nginx -t` checks |
+| Cloudflare tunnels | One tunnel serves many sites; ingress is rebuilt automatically |
+
+## Observe
+
+| Feature | Details |
+| --- | --- |
+| Live requests | Requests per second, 4xx/5xx, response times, and a streaming feed, every 2 seconds |
+| Charts | Requests and duration (avg, p95) over 1 hour to 30 days |
+| Top routes and countries | Busiest paths (IDs grouped) and visitor countries |
+| Uptime | Checked every minute, history and uptime % |
+| Issues | Laravel errors grouped by exception and line, with stack traces; resolve, ignore, reopen |
+| Attack detection | SQL injection, XSS, path traversal, file inclusion, command injection, scanners, attack tools |
+| IP blocking | One click from Security; works behind Cloudflare |
+| Heartbeats | Ping URLs for cron jobs; alert when one is missed |
+| Server monitoring | Live CPU, memory, load, network; history; services; top processes |
+| Logs and health | Laravel, worker, PM2, and nginx logs; health checks per site |
+
+## Alert
+
+Telegram alerts (each one optional, each can go to its own topic): deploy started / succeeded / failed / stopped, site down / back up, worker crashed / recovered, disk almost full, server patches, new or returning issue, error spike, slow responses, attack detected, missed heartbeat.
+
+## Secure
+
+| Feature | Details |
+| --- | --- |
+| One admin, 2FA required | No registration; authenticator app required before anything works |
+| Secrets behind 2FA | Saved tokens and passwords are hidden; showing one asks for the 6-digit code |
+| Hide from search engines | `noindex` header and `robots.txt` per site |
+| Block crawlers | 403 for search, SEO, and AI crawlers (link previews still work) |
+| Basic auth | Password-protect a site, with paths that stay open (APIs, webhooks) |
+| Least privilege | The panel runs as `www-data`; only one validated script runs as root |
+
+## Tools
+
+File manager (browse, edit, upload, download any file), terminal with autocomplete for Artisan, PM2, and Supervisor commands, phpMyAdmin one-click sign-in, sidebar links, timezone and date format settings.

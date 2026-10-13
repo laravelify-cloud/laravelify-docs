@@ -1,0 +1,30 @@
+---
+title: "Cloudflare tunnels"
+description: "Serve sites over HTTPS without opening ports."
+---
+
+A Cloudflare tunnel connects the server to Cloudflare from the inside. Visitors reach Cloudflare over HTTPS, and Cloudflare forwards the request through the tunnel to nginx on the server. No inbound web port has to be open and the server's IP stays private.
+
+## Add a tunnel
+
+<Steps>
+  <Step title="Create it in Cloudflare">
+    Zero Trust → **Networks → Tunnels → Create a tunnel** → *Cloudflared*. Copy the token (the long string after `--token`).
+  </Step>
+  <Step title="Save it in Laravelify">
+    **Tunnels → New tunnel**: a name and the token. Laravelify installs a `cloudflared` service for it (`laravelify-tunnel-{slug}`).
+  </Step>
+  <Step title="Use it on websites">
+    On each website's **General** tab, pick the tunnel. Its domain is added to the tunnel's ingress.
+  </Step>
+  <Step title="Add the public hostname">
+    In Cloudflare, tunnel → **Public hostnames** → add the site's domain with the service `http://localhost:80`.
+  </Step>
+</Steps>
+
+## Rules
+
+- A website uses at most one tunnel; one tunnel can serve many websites.
+- Every hostname goes to `http://127.0.0.1:80`, and nginx picks the site by `server_name`.
+- TLS stays at Cloudflare. Set SSL/TLS mode to **Full** in Cloudflare.
+- Visitor IPs are taken from `CF-Connecting-IP` (only for requests coming from the local tunnel), so Monitoring and IP blocking see the real visitor.

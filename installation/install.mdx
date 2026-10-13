@@ -1,0 +1,87 @@
+---
+title: "Installation"
+description: "One command installs the panel and everything your sites need."
+---
+
+import InstallCommand from '/snippets/install-command.mdx';
+
+## Install
+
+SSH into the server as a user that can use `sudo`, then run:
+
+<InstallCommand />
+
+The installer asks for:
+
+| Prompt | Example | Used for |
+| --- | --- | --- |
+| MySQL root password (twice) | a long random password | MySQL root, phpMyAdmin sign-in, site databases |
+| Laravelify panel domain | `panel.example.com` | The panel's address |
+| phpMyAdmin domain | `db.example.com` | phpMyAdmin's address |
+| Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare |
+
+When it finishes it prints the panel URL. Open `https://panel.example.com/setup` to create the admin account and turn on two-factor authentication.
+
+## Unattended install
+
+Every prompt can be given as an environment variable, which is handy for provisioning scripts:
+
+```bash
+curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
+  MYSQL_ROOT_PASSWORD='change-me' \
+  PANEL_DOMAIN=panel.example.com \
+  PHPMYADMIN_DOMAIN=db.example.com \
+  CLOUDFLARE_TUNNEL_TOKEN='eyJh…' \
+  bash
+```
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MYSQL_ROOT_PASSWORD` | asked | MySQL root password (no spaces) |
+| `PANEL_DOMAIN` | asked | Panel hostname |
+| `PHPMYADMIN_DOMAIN` | asked | phpMyAdmin hostname (different from the panel) |
+| `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
+| `LARAVELIFY_VERSION` | `latest` | Release to install, like `1.2.0` |
+| `LARAVELIFY_REPO` | the official repository | GitHub `owner/name` to download releases from (for forks) |
+| `LARAVELIFY_SOURCE` | — | Install from a local folder instead (development) |
+| `LARAVELIFY_ARCHIVE_URL` | — | Install from any `.tar.gz` URL instead |
+
+## What gets installed
+
+<AccordionGroup>
+  <Accordion title="Web and PHP">
+    - **nginx**, the web server for every site, the panel, and phpMyAdmin.
+    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5** (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs.
+    - **Composer**.
+  </Accordion>
+  <Accordion title="Data">
+    - **MySQL 8.4 LTS** (Ubuntu's MySQL as a fallback), with the root password you chose.
+    - **Redis**, used by the panel for sessions and queues and available to your sites.
+    - **phpMyAdmin** on its own domain, with one-click sign-in from the panel.
+  </Accordion>
+  <Accordion title="Node and processes">
+    - **Node.js 20, 22, and 24** (through `n`) and **PM2** for Next.js sites.
+    - **Supervisor**, which runs the panel's `laravelify-queue` (deploys) and `laravelify-scheduler` (monitoring, alerts), plus each Laravel site's workers.
+  </Accordion>
+  <Accordion title="Network and security">
+    - **cloudflared**, connected with your tunnel token.
+    - **ufw** firewall: deny incoming by default, allow SSH (22), 80, and 443.
+    - A sudoers rule that lets the panel (`www-data`) run only `scripts/host-apply.sh` as root. That script validates every argument before it touches the system.
+  </Accordion>
+</AccordionGroup>
+
+The panel lives in `/opt/laravelify`. Sites live in `/var/www/{slug}`.
+
+## After installing
+
+<Steps>
+  <Step title="Add the public hostnames in Cloudflare">
+    Tunnel → **Public hostnames**: `panel.example.com` → `http://localhost:80` and `db.example.com` → `http://localhost:80`.
+  </Step>
+  <Step title="Create the admin and enable 2FA">
+    Open `https://panel.example.com/setup`.
+  </Step>
+  <Step title="Set a Redis password">
+    Redis starts without a password. Set one under **Server → Redis**.
+  </Step>
+</Steps>

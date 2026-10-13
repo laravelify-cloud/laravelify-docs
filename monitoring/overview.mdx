@@ -1,0 +1,58 @@
+---
+title: "Website monitoring"
+description: "Live requests, charts, uptime, issues, and attacks for every site."
+---
+
+Every website has a **Monitoring** tab, and the sidebar's **Monitoring** page shows all sites at once (status, uptime, requests, p95, 5xx, issues, threats over 24 hours).
+
+Nothing is installed inside your apps. Laravelify reads what nginx sees, so it works for Laravel and Next.js alike.
+
+## Turn on request tracking
+
+Open the website → **Monitoring** → **Turn on tracking**. This adds one include line to the site's nginx file and reloads nginx (workers keep running). From then on nginx writes one JSON line per request to `/var/log/laravelify/{slug}.metrics.log`, and the panel reads it.
+
+Uptime checks and Laravel error tracking work without it.
+
+## Views
+
+<Tabs>
+  <Tab title="Overview">
+    - **Live** panel (every 2 seconds): requests, per second, 4xx, 5xx, average response time for the last 60 seconds, a per-second bar chart, and a feed of requests as they arrive.
+    - **Availability**: up or down, last check, uptime %, and an uptime bar for the range.
+    - **Requests** chart split by 1/2/3xx, 4xx, 5xx, and **Duration** chart (average and p95).
+    - **Top routes** with IDs grouped (`/orders/{id}`), **countries** (from Cloudflare), open **issues**.
+    - **Monitoring settings**: how long request details are kept (1–90 days), the slow limit, the error-spike limit.
+  </Tab>
+  <Tab title="Requests">
+    Every request, newest first, filtered by status (1/2/3xx, 4xx, 5xx), **Slow** (above the slow limit), or **Threats**, and searchable by path or exact IP. Successful static files (js, css, images) are left out.
+  </Tab>
+  <Tab title="Issues">
+    `ERROR` and worse from the Laravel log, grouped by exception class and the file and line that threw it, with the stack trace, count, and first and last seen. **Resolve** an issue and it reopens (and alerts) if it happens again; **Ignore** keeps counting without alerts.
+  </Tab>
+  <Tab title="Heartbeats">
+    Ping URLs for cron jobs. See [Heartbeats](/monitoring/heartbeats).
+  </Tab>
+  <Tab title="Security">
+    Requests flagged by the attack detector, by type and over time, the most suspicious IPs with a **Block** button, and the blocked list.
+  </Tab>
+</Tabs>
+
+## Time ranges and data
+
+The range buttons (1H, 24H, 7D, 14D, 30D) apply to the charts and tables. Charts are built from per-minute totals kept for at least 30 days; request details are kept for the site's retention (7 days by default) and pruned nightly. History charts refresh every minute; the live panel every 2 seconds.
+
+## Attack detection
+
+Each request is checked for:
+
+| Type | Examples |
+| --- | --- |
+| SQL injection | `UNION SELECT`, `' OR 1=1`, `sleep(5)`, `information_schema` |
+| XSS | `<script>`, `javascript:`, `onerror=` |
+| Path traversal | `../../`, encoded variants |
+| File inclusion | `/etc/passwd`, `php://filter`, remote file URLs |
+| Command injection | `; cat`, `$(whoami)`, `${jndi:` |
+| Scanner probes | `/.env`, `/.git/`, `wp-login.php`, `phpmyadmin`, `vendor/phpunit` |
+| Attack tools | sqlmap, nikto, nuclei, wpscan, gobuster, … |
+
+Each match gets a risk level (critical, high, medium). Nothing is blocked automatically: block an IP from the Security view, or turn on the **Attack detected** Telegram alert.

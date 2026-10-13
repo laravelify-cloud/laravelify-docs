@@ -1,0 +1,42 @@
+---
+title: "Server requirements"
+description: "What the server needs before you install Laravelify."
+---
+
+Laravelify manages the server it is installed on. Use a **fresh** server dedicated to it: the installer configures nginx, PHP-FPM, MySQL, Redis, Supervisor, and the firewall.
+
+## Operating system
+
+| Ubuntu | Status |
+| --- | --- |
+| 24.04 LTS | Recommended |
+| 22.04 LTS | Supported |
+| 26.04 LTS | Supported (PHP from the Sury repository) |
+
+Other distributions are not supported. The installer uses `apt`, systemd, and `ufw`.
+
+## Hardware
+
+| | Minimum | Recommended |
+| --- | --- | --- |
+| CPU | 2 vCPU | 4 vCPU |
+| Memory | 2 GB | 4 GB or more |
+| Disk | 30 GB SSD | 60 GB SSD or more |
+
+Each Laravel site adds its PHP workers and queue processes; each Next.js site adds one Node process. Next.js builds are the heaviest moment: give the server at least 2 GB of free memory for `npm run build`, or add swap.
+
+## Network
+
+- Root or `sudo` access over SSH.
+- Outbound internet (GitHub, package mirrors, Cloudflare, Telegram).
+- A domain on **Cloudflare** with a **tunnel**. Laravelify serves sites through Cloudflare tunnels, so no inbound port has to be open for the web. The firewall still allows SSH, 80, and 443.
+
+<Warning>
+  Do not install Laravelify on a server that already hosts sites with its own nginx or PHP setup. The installer replaces their configuration.
+</Warning>
+
+## What you need from Cloudflare
+
+1. Add the domain to Cloudflare.
+2. Zero Trust → **Networks → Tunnels → Create a tunnel** (type *Cloudflared*). Copy the token from the install command Cloudflare shows (the long string after `--token`).
+3. You add public hostnames for the panel and phpMyAdmin after installing. See [Quickstart](/quickstart).

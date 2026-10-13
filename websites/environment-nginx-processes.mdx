@@ -1,0 +1,37 @@
+---
+title: "Environment, nginx, and processes"
+description: "The files Laravelify writes for each site, and how to edit them."
+---
+
+Every website stores its files in the panel. Saving one writes it to the server through `host-apply.sh`.
+
+| File | Installed at | Tab |
+| --- | --- | --- |
+| Environment | `/var/www/{slug}/.env` | Environment |
+| nginx | `/etc/nginx/sites-available/laravelify-{slug}.conf` | Nginx |
+| Supervisor (Laravel) | `/etc/supervisor/conf.d/laravelify-{slug}.conf` | Processes |
+| PM2 (Next.js) | `/var/www/{slug}/ecosystem.config.js` | Processes |
+
+## Environment
+
+Saving `.env` also deletes `bootstrap/cache/config.php`, because a cached config ignores `.env`. The next deploy caches it again.
+
+## nginx
+
+nginx is tested with `nginx -t` before every reload. A broken file is not applied and the error is shown on the page, so your other sites keep working.
+
+Add extra `location` blocks (OAuth callbacks, Socket.IO, large uploads) directly in the editor. Keep this line inside every `server { }` block; it carries the Security tab rules and the Monitoring request log:
+
+```nginx
+include /etc/nginx/laravelify-security/{slug}.conf; # Laravelify security (Security tab)
+```
+
+Laravelify adds it for you after `server_name` when it is missing.
+
+## Processes
+
+Add Supervisor programs for extra queues or long-running commands, or edit the PM2 app. Saving restarts the site's programs.
+
+## Regenerate
+
+**Runtime → Regenerate files** rebuilds the nginx and process files from the templates (after changing the PHP version, port, or Reverb). Custom edits are replaced, so copy them first.

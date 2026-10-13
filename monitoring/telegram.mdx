@@ -1,0 +1,41 @@
+---
+title: "Telegram alerts"
+description: "Deploys, downtime, errors, attacks, and server alerts in Telegram."
+---
+
+## Connect a bot
+
+<Steps>
+  <Step title="Create the bot">
+    Talk to [@BotFather](https://t.me/BotFather), send `/newbot`, and copy the bot token.
+  </Step>
+  <Step title="Add it to a chat">
+    Add the bot to a group (a forum group if you want topics) or start a private chat with it, and send it a message.
+  </Step>
+  <Step title="Save it in Laravelify">
+    **Settings → Telegram bot**: paste the token, then pick the chat from **Find chats** (it lists chats that recently messaged the bot) or type the chat ID.
+  </Step>
+  <Step title="Test">
+    Click **Send test message**.
+  </Step>
+</Steps>
+
+## Events
+
+Turn each one on or off. In a forum group, each event can post to its own **topic ID**; empty uses the default topic.
+
+| Group | Events |
+| --- | --- |
+| Deployments | Started, succeeded, failed, stopped, push skipped |
+| Websites | Site down (two failed checks in a row), back up |
+| Processes | Queue, scheduler, or PM2 app stopped or crashing; running again |
+| Monitoring | New or returning issue, error spike, slow responses, attack detected, missed heartbeat |
+| Server | Disk usage above the limit, server patches available |
+
+Messages follow Coolify's style: a headline, a short summary, and buttons such as **Deployment logs**, **Open website**, or **Open monitoring**.
+
+## Avoiding noise
+
+- A site is reported down only after **two** failed checks in a row, so a restart during a deploy stays quiet.
+- Error spikes and slow alerts wait 30 minutes before alerting again; attacks from the same IP, 6 hours.
+- Each website sets its own limits under **Monitoring → Monitoring settings**.

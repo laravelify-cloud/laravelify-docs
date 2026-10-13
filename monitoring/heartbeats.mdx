@@ -1,0 +1,44 @@
+---
+title: "Heartbeats"
+description: "Know when a cron job or scheduled task stops running."
+---
+
+A heartbeat is a URL your job calls when it finishes. If no call arrives within the expected interval (plus 2 minutes of grace), Laravelify sends a Telegram alert, and another one when the job reports again.
+
+## Add one
+
+Website → **Monitoring** → **Heartbeats** → name it and pick how often it runs (every minute to weekly). Copy its command:
+
+```bash
+curl -fsS https://panel.example.com/hooks/heartbeat/AbC123…
+```
+
+## Call it
+
+<CodeGroup>
+```bash crontab
+0 3 * * * /usr/bin/php /var/www/myapp/artisan backup:run && curl -fsS https://panel.example.com/hooks/heartbeat/AbC123…
+```
+
+```php Laravel scheduler
+Schedule::command('backup:run')
+    ->daily()
+    ->pingOnSuccess('https://panel.example.com/hooks/heartbeat/AbC123…');
+```
+
+```bash Any script
+./nightly-export.sh && curl -fsS --retry 3 https://panel.example.com/hooks/heartbeat/AbC123…
+```
+</CodeGroup>
+
+## States
+
+| State | Meaning |
+| --- | --- |
+| Waiting | Created, no ping yet |
+| On time | Pinged within the interval |
+| Missed | No ping within interval + grace; one alert was sent |
+
+<Note>
+  The URL needs no login so cron can call it. The token is 40 random characters; anyone with the URL can mark the job alive, so keep it private. Calls are limited to 60 a minute.
+</Note>

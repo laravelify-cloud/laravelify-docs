@@ -1,0 +1,74 @@
+---
+title: "Troubleshooting"
+description: "Common problems and how to fix them."
+---
+
+<AccordionGroup>
+  <Accordion title="The installer stops at 'repo.packagist.org could not be fully loaded'">
+    A warning, not an error: Composer could not reach Packagist and used its cache. If the install stops there, the server usually cannot reach IPv6 addresses. Prefer IPv4 and run the installer again:
+
+    ```bash
+    sudo bash -c 'grep -q "^precedence ::ffff:0:0/96" /etc/gai.conf || echo "precedence ::ffff:0:0/96  100" >> /etc/gai.conf'
+    ```
+  </Accordion>
+
+  <Accordion title="The panel or a site shows a Cloudflare 502 or 1033 error">
+    The tunnel is not connected or the public hostname is missing.
+
+    ```bash
+    sudo systemctl status cloudflared 'laravelify-tunnel-*'
+    ```
+
+    In Cloudflare, check the tunnel is **Healthy** and the hostname points to `http://localhost:80`.
+  </Accordion>
+
+  <Accordion title="A deploy fails at git fetch with 'Authentication failed'">
+    The GitHub App is not installed on that repository, or the personal token expired or lacks **Contents: read**. Open **Sources**, check the repository is listed, then deploy again.
+  </Accordion>
+
+  <Accordion title="A deploy stays 'queued'">
+    The queue worker is not running:
+
+    ```bash
+    sudo supervisorctl status laravelify-queue
+    sudo supervisorctl restart laravelify-queue
+    ```
+  </Accordion>
+
+  <Accordion title="Monitoring shows no requests">
+    Click **Turn on tracking** on the website's Monitoring tab, then visit the site. If it still shows nothing, check the scheduler runs (`sudo supervisorctl status laravelify-scheduler`) and that `/var/log/laravelify/{slug}.metrics.log` grows when you visit the site.
+  </Accordion>
+
+  <Accordion title="Next.js: 'Script not found: .next/standalone/server.js'">
+    Add `output: 'standalone'` to `next.config` and deploy again. Before the first successful build there is nothing for PM2 to start; that is expected.
+  </Accordion>
+
+  <Accordion title="Next.js sites are down after the server restarts">
+    PM2 restores apps on boot through the `pm2-root` service. Set it up (and move any apps started by older versions into root's PM2) with:
+
+    ```bash
+    sudo bash /opt/laravelify/scripts/host-apply.sh pm2-boot all
+    ```
+
+    `systemctl status pm2-root` should then show it enabled. Updating the panel runs this for you.
+  </Accordion>
+
+  <Accordion title="Laravel uses old .env values">
+    A cached config ignores `.env`. Saving the Environment tab clears it; from the terminal run `php artisan config:clear`.
+  </Accordion>
+
+  <Accordion title="I lost my authenticator">
+    See [Reset two-factor from the server](/security/authentication#reset-two-factor-from-the-server).
+  </Accordion>
+</AccordionGroup>
+
+## Where to look
+
+| Log | Path |
+| --- | --- |
+| Panel | `/opt/laravelify/storage/logs/laravel.log` |
+| Deploy queue | `/opt/laravelify/storage/logs/panel-queue.log` |
+| Scheduler | `/opt/laravelify/storage/logs/panel-scheduler.log` |
+| A site's nginx | `/var/log/nginx/laravelify-{slug}.error.log` |
+
+Still stuck? [Open an issue](https://github.com/laravelify-cloud/laravelify/issues) with the error message and these logs (remove secrets first).

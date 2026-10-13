@@ -1,0 +1,33 @@
+---
+title: "Updating"
+description: "Update the panel to the latest release with one command."
+---
+
+import UpdateCommand from '/snippets/update-command.mdx';
+
+<UpdateCommand />
+
+The update script:
+
+1. Downloads the latest release from GitHub (the version change is printed, like `1.0.0 -> 1.1.0`).
+2. Copies it over `/opt/laravelify`, keeping your `.env`, database, `storage/`, and `vendor/`.
+3. Runs `composer install`, clears caches, and runs database migrations.
+4. Restarts the queue worker and the scheduler so they load the new code.
+
+Your websites keep running during the update; only the panel restarts its own workers.
+
+## Update to a specific version
+
+```bash
+sudo LARAVELIFY_VERSION=1.2.0 bash /opt/laravelify/scripts/update.sh
+```
+
+This also works for going back to an older release. Migrations that already ran are not undone.
+
+## Release notes
+
+Every release is on the [GitHub releases page](https://github.com/laravelify-cloud/laravelify/releases) with its changes. The panel shows its version next to **GitHub** in the sidebar.
+
+<Tip>
+  If an update fails halfway, run it again. Each step is safe to repeat.
+</Tip>

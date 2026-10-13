@@ -1,0 +1,33 @@
+---
+title: "Sign-in and two-factor"
+description: "One admin account, an authenticator app, and secrets behind your code."
+---
+
+## One admin
+
+Laravelify has a single admin account. The first visit to the panel goes to `/setup`; after that account exists, there is no registration page.
+
+## Two-factor is required
+
+Right after creating the account you scan a QR code with an authenticator app (Google Authenticator, 1Password, Authy, Bitwarden) and enter the 6-digit code. Until then every page is locked. Later sign-ins at `/login` ask for email, password, and the current code.
+
+<Warning>
+  Keep the setup key from the QR screen somewhere safe. If you lose the authenticator, you need shell access to the server to reset it.
+</Warning>
+
+## Secrets stay hidden
+
+Saved tokens and passwords (GitHub token, Telegram bot token, database passwords, webhook secrets, basic auth passwords, server passwords) are encrypted in the database and never sent to the browser. A saved field shows **Saved**.
+
+To see one, click the **eye** icon and enter your authenticator code. Secrets then stay visible for 5 minutes. Five wrong codes block revealing for a minute.
+
+Typing in a saved field replaces the value; leaving it empty keeps the saved one.
+
+## Reset two-factor from the server
+
+```bash
+cd /opt/laravelify
+sudo -u www-data php artisan tinker --execute 'App\Models\User::first()->forceFill(["two_factor_secret" => null, "two_factor_confirmed_at" => null])->save();'
+```
+
+The next sign-in asks you to set up two-factor again.

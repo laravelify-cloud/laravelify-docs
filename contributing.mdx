@@ -1,0 +1,42 @@
+---
+title: "Contributing"
+description: "Run Laravelify locally, test, and send a pull request."
+---
+
+Laravelify is a Laravel 13, Livewire 4, Alpine, and Tailwind 4 app. Contributions are welcome: bug reports, docs, and pull requests.
+
+## Run it locally
+
+```bash
+git clone https://github.com/laravelify-cloud/laravelify.git
+cd laravelify
+composer install
+cp .env.example .env          # set DB_* (MySQL), or DB_CONNECTION=sqlite
+php artisan key:generate
+php artisan migrate
+npm install
+npm run dev
+php artisan serve
+```
+
+On Windows and macOS, system commands are not executed: the panel writes every nginx, Supervisor, and PM2 file to `storage/app/rendered` so you can see what it would apply. Set `LARAVELIFY_HOST_COMMANDS=false` to get the same on Linux.
+
+## Tests and style
+
+```bash
+php artisan test --compact
+vendor/bin/pint
+```
+
+Add or update a test for every behavior change. Pull requests run the tests on GitHub Actions.
+
+## Pull requests
+
+1. Fork the repository and create a branch from `main`.
+2. Keep the change focused; explain the why in the description.
+3. Make sure `php artisan test` and `vendor/bin/pint --test` pass.
+4. For UI changes, add a screenshot.
+
+## Security issues
+
+Do not open a public issue. Follow [SECURITY.md](https://github.com/laravelify-cloud/laravelify/blob/main/SECURITY.md).

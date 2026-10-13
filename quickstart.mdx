@@ -1,0 +1,73 @@
+---
+title: "Quickstart"
+description: "Install Laravelify, sign in, and deploy your first site."
+---
+
+import InstallCommand from '/snippets/install-command.mdx';
+
+Once you have a fresh Ubuntu server and a domain on Cloudflare, this guide takes you from an empty server to a deployed site that redeploys on every push.
+
+## Prerequisites
+
+- An Ubuntu 22.04, 24.04, or 26.04 server with root access (see [requirements](/installation/requirements)).
+- A domain on Cloudflare, and a **Cloudflare tunnel token** (Zero Trust → Networks → Tunnels → Create a tunnel).
+- A Laravel (PHP 8.0+) or Next.js app in a GitHub repository.
+
+## Install and sign in
+
+<Steps>
+  <Step title="Run the installer">
+    SSH into the server and run:
+
+    <InstallCommand />
+
+    It asks for four things: a MySQL root password, the panel domain (like `panel.example.com`), a phpMyAdmin domain (like `db.example.com`), and the Cloudflare tunnel token. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
+  </Step>
+  <Step title="Point the domains at the tunnel">
+    In Cloudflare Zero Trust, open your tunnel → **Public hostnames** and add both domains with the service `http://localhost:80`.
+  </Step>
+  <Step title="Create the admin account">
+    Open `https://panel.example.com/setup`. Enter your name, email, and password. There is only one admin account, and nobody can register after it exists.
+  </Step>
+  <Step title="Turn on two-factor authentication">
+    Scan the QR code with an authenticator app (Google Authenticator, 1Password, Authy) and enter the 6-digit code. The panel stays locked until this is done.
+  </Step>
+</Steps>
+
+## Deploy your first site
+
+<Steps>
+  <Step title="Connect GitHub">
+    Open **Sources** → **GitHub App** and follow the one-click setup, or save a personal access token under **Settings → GitHub token**. Public repositories need neither.
+  </Step>
+  <Step title="Create a group and a website">
+    Open **Groups**, create one (for example `production`), then **New website**. Pick **Laravel** or **Next.js**, the domain, the repository, the branch, and the Cloudflare tunnel. For Laravel, tick **Create a MySQL database** to get a database and user filled into `.env`.
+  </Step>
+  <Step title="Check the environment">
+    Open the **Environment** tab and add your app's settings (mail, API keys). The database lines are already filled.
+  </Step>
+  <Step title="Deploy">
+    Click **Deploy**. The log streams live: clone, `composer install` or `npm ci && npm run build`, migrations, then nginx and workers are reloaded. When it says **Finished**, open the site from **Links**.
+  </Step>
+  <Step title="Deploy on every push">
+    Pushes to the branch deploy automatically through the GitHub App. With a token, add the webhook shown on the **Deployments** tab to the repository.
+  </Step>
+</Steps>
+
+## Set up monitoring and alerts
+
+<Steps>
+  <Step title="Turn on request tracking">
+    Open the website → **Monitoring** and click **Turn on tracking**. Visit the site and watch requests appear in the live feed within two seconds.
+  </Step>
+  <Step title="Connect Telegram">
+    Create a bot with [@BotFather](https://t.me/BotFather), then save the bot token and chat ID under **Settings → Telegram bot** and send a test message. See [Telegram alerts](/monitoring/telegram).
+  </Step>
+  <Step title="Pick your timezone">
+    **Settings → General** sets the timezone and date format for every date in the panel.
+  </Step>
+</Steps>
+
+<Tip>
+  Updating later is one command: `sudo bash /opt/laravelify/scripts/update.sh`. See [Updating](/installation/updating).
+</Tip>

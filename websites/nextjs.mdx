@@ -1,0 +1,56 @@
+---
+title: "Next.js sites"
+description: "Standalone builds kept running by PM2."
+---
+
+A Next.js website is built as a **standalone** server and kept running by PM2. nginx proxies the domain to `127.0.0.1:{port}`, including WebSocket upgrades.
+
+## Prepare your app
+
+Add standalone output to `next.config.js` (or `.ts`/`.mjs`):
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+};
+
+module.exports = nextConfig;
+```
+
+Without it, `.next/standalone/server.js` does not exist and PM2 has nothing to start.
+
+## Deploy steps
+
+<Steps>
+  <Step title="Fetch the code">
+    `git clone`, or `git fetch` and reset to the branch.
+  </Step>
+  <Step title="Install">
+    The package manager comes from the lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → Yarn (both through Corepack), otherwise `npm ci`.
+  </Step>
+  <Step title="Build">
+    `npm run build` (or the pnpm/Yarn equivalent) with the site's Node version.
+  </Step>
+  <Step title="Copy the standalone extras">
+    `public/`, `.next/static/`, and `.env` are copied into `.next/standalone/`, as Next.js requires.
+  </Step>
+  <Step title="Start">
+    `pm2 startOrReload ecosystem.config.js`, then nginx is reloaded.
+  </Step>
+</Steps>
+
+## The PM2 file
+
+```js
+module.exports = {
+  apps: [{
+    name: 'myshop',
+    cwd: '/var/www/myshop/.next/standalone',
+    script: 'server.js',
+    env: { PORT: 3000, HOSTNAME: '127.0.0.1', NODE_ENV: 'production' },
+  }],
+};
+```
+
+Edit it on the **Processes** tab. Saving the environment before the first deploy is fine: PM2 starts after the first successful build.

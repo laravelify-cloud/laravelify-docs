@@ -1,0 +1,68 @@
+---
+title: "Introduction"
+description: "Self-hosted deploys for Laravel and Next.js, on one Ubuntu server you own."
+---
+
+<img className="rounded-xl" src="/images/banner-dark.png" alt="Laravelify" />
+
+Laravelify is an open-source control panel that turns one Ubuntu server into a home for your **Laravel** and **Next.js** apps. Push to GitHub and your site deploys. Open the panel and you see live traffic, errors, attacks, and server load. It runs on your hardware, with no per-seat pricing and no vendor in the middle.
+
+It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine, and Tailwind) and follows the design of [Coolify](https://coolify.io). Unlike Coolify it does **not** use Docker: Laravel sites run on nginx and PHP-FPM with Supervisor workers, and Next.js sites run as a standalone build under PM2.
+
+<Note>
+  Laravelify is **self-hosted only**. There is no cloud version: you install it on your own server with one command, and everything stays there.
+</Note>
+
+## What you get
+
+<CardGroup cols={2}>
+  <Card title="Git push to deploy" icon="rocket" href="/websites/github">
+    GitHub App or token, webhooks, full build logs, one-click redeploys.
+  </Card>
+  <Card title="Laravel and Next.js" icon="layer-group" href="/websites/groups-and-websites">
+    PHP 8.0–8.5 with Supervisor workers, or Node 20–24 standalone builds under PM2.
+  </Card>
+  <Card title="Live monitoring" icon="chart-line" href="/monitoring/overview">
+    Requests, response times, uptime, grouped Laravel errors, and a live request feed.
+  </Card>
+  <Card title="Attack detection" icon="shield-halved" href="/security/site-security">
+    SQL injection, XSS, scanners, and attack tools flagged, with one-click IP blocking.
+  </Card>
+  <Card title="Telegram alerts" icon="telegram" href="/monitoring/telegram">
+    Deploys, downtime, crashed workers, error spikes, slow responses, missed cron jobs.
+  </Card>
+  <Card title="Cloudflare tunnels" icon="cloud" href="/websites/cloudflare-tunnels">
+    No open ports needed: HTTPS terminates at Cloudflare, the server stays private.
+  </Card>
+  <Card title="Server tools" icon="terminal" href="/tools/file-manager-and-terminal">
+    File manager, terminal with Laravel/PM2 autocomplete, logs, health checks, phpMyAdmin sign-in.
+  </Card>
+  <Card title="Server monitoring" icon="microchip" href="/monitoring/server">
+    Live CPU, memory, load, network, services, and top processes.
+  </Card>
+</CardGroup>
+
+## How it fits together
+
+```mermaid
+flowchart LR
+  GH[GitHub push] -->|webhook| P[Laravelify panel]
+  P -->|queue job| D[Deploy: git, composer/npm, migrate, build]
+  D --> N[nginx]
+  N --> L[Laravel: PHP-FPM + Supervisor]
+  N --> X[Next.js: PM2]
+  CF[Cloudflare tunnel] --> N
+  N -->|request log| M[Monitoring]
+  M -->|alerts| T[Telegram]
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Install the panel and deploy your first site in about ten minutes.
+  </Card>
+  <Card title="Server requirements" icon="server" href="/installation/requirements">
+    What the server needs before you run the installer.
+  </Card>
+</CardGroup>

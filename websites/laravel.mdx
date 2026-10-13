@@ -1,0 +1,56 @@
+---
+title: "Laravel sites"
+description: "PHP-FPM, Supervisor workers, databases, and the deploy steps."
+---
+
+A Laravel website is deployed to `/var/www/{slug}`. nginx serves `public/` and sends PHP to the socket of the site's version, `unix:/run/php/php{version}-fpm.sock`. HTTPS is terminated by Cloudflare when the site uses a tunnel.
+
+## Deploy steps
+
+<Steps>
+  <Step title="Fetch the code">
+    `git clone` on the first deploy, then `git fetch` and reset to the branch. Private repositories use a short-lived GitHub App token or your personal token; it is never stored in `.git/config` and is hidden in the log.
+  </Step>
+  <Step title="Install dependencies">
+    `composer install --no-dev --optimize-autoloader`.
+  </Step>
+  <Step title="Prepare the app">
+    Generates `APP_KEY` when it is empty, runs `php artisan migrate --force` when the site has a database (otherwise the step is skipped and logged), then `php artisan optimize`.
+  </Step>
+  <Step title="Build front-end assets">
+    When the repository has a `package.json` with a `build` script: `npm ci && npm run build`.
+  </Step>
+  <Step title="Apply and restart">
+    Installs the nginx and Supervisor files, reloads nginx, and restarts every worker of the site so they load the new code.
+  </Step>
+</Steps>
+
+## Workers
+
+The generated Supervisor file starts:
+
+- `php artisan queue:work redis` on the `default` queue
+- `php artisan schedule:work`
+- `php artisan reverb:start` when Reverb is on
+
+Add your own on the **Processes** tab, for example:
+
+```ini
+[program:myapp-notifications]
+command=php /var/www/myapp/artisan queue:work redis --queue=notifications,default
+directory=/var/www/myapp
+user=www-data
+autostart=true
+autorestart=true
+stdout_logfile=/var/www/myapp/storage/logs/notifications.log
+```
+
+Workers run as `www-data`. Their logs show up on the **Logs** tab, and a crashed worker triggers a Telegram alert.
+
+## Database
+
+Tick **Create a MySQL database** when creating the site, or use **Provision database** on the General tab. Laravelify creates the database and a user with a random password and fills `DB_*` in `.env`. The password is encrypted in the panel; click the eye icon (with your 2FA code) to see it, or open phpMyAdmin with one click from the sidebar.
+
+<Tip>
+  The site's commands never see the panel's own environment. A site always uses its own `.env`, even when the panel runs the command.
+</Tip>

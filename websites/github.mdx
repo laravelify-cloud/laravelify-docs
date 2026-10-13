@@ -1,0 +1,41 @@
+---
+title: "GitHub and auto deploy"
+description: "Connect repositories and deploy on every push."
+---
+
+## Connect GitHub
+
+<Tabs>
+  <Tab title="GitHub App (recommended)">
+    **Sources → New GitHub App**. Laravelify creates the app on GitHub for you (manifest flow): you confirm on GitHub, install it on the repositories you want, and come back.
+
+    - Works for private repositories.
+    - Uses a short-lived token per deploy; nothing long-lived is stored in the site.
+    - Pushes are delivered to the panel automatically. No webhook to add per repository.
+  </Tab>
+  <Tab title="Personal access token">
+    **Settings → GitHub token**. Create a fine-grained token on GitHub with **Contents: read** for the repositories, and paste it. It is stored encrypted.
+
+    Then add a webhook to each repository (below).
+  </Tab>
+  <Tab title="Public repository">
+    Paste the `https://github.com/owner/repo` URL. No token needed. Add a webhook for auto deploy.
+  </Tab>
+</Tabs>
+
+## Webhooks (token or public repositories)
+
+On the website's **Deployments** tab, copy the **Payload URL** and **Secret**. In GitHub: repository → **Settings → Webhooks → Add webhook**:
+
+| Field | Value |
+| --- | --- |
+| Payload URL | `https://panel.example.com/hooks/github/{slug}` |
+| Content type | `application/json` |
+| Secret | the website's secret (click the eye to show it) |
+| Events | Just the **push** event |
+
+Laravelify checks the `X-Hub-Signature-256` signature and deploys only when the push is to the site's branch. The **Deployments** tab shows the last delivery and why it did or did not deploy.
+
+## Auto deploy
+
+Turn **Auto deploy** off on the Deployments tab to keep pushes from deploying (they are still recorded). Use **Deploy** to deploy by hand at any time, and **Stop deploy** to cancel a running one.
