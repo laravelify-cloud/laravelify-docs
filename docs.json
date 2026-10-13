@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Laravelify",
-  "description": "Self-hosted deploys for Laravel and Next.js on your own Ubuntu server.",
+  "description": "Self-hosted deploys for any app (Laravel, Node.js, React, Vue, Next.js and more) on your own Ubuntu server.",
   "colors": {
     "primary": "#6B16ED",
     "light": "#FCD452",

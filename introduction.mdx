@@ -1,11 +1,11 @@
 ---
 title: "Introduction"
-description: "Self-hosted deploys for Laravel and Next.js, on one Ubuntu server you own."
+description: "Deploy any app (Laravel, Node.js, React, Vue, Angular, Next.js and more) to one Ubuntu server you own."
 ---
 
 <img className="rounded-xl" src="/images/banner-dark.png" alt="Laravelify" />
 
-Laravelify is an open-source control panel that turns one Ubuntu server into a home for your apps: **Laravel** and PHP backends, **Express**, **NestJS**, and other Node.js servers, **React**, **Vue.js**, **Angular**, **Svelte**, and **Astro** front ends, and full-stack **Next.js**, **Nuxt**, and **SvelteKit**. Push to GitHub and your site deploys. Open the panel and you see live traffic, errors, attacks, and server load. It runs on your hardware, with no per-seat pricing and no vendor in the middle.
+Laravelify is an open-source control panel that turns one Ubuntu server into a home for **any app you build**: **Laravel** and PHP backends, **Express**, **NestJS**, and other Node.js servers, **React**, **Vue.js**, **Angular**, **Svelte**, and **Astro** front ends, and full-stack **Next.js**, **Nuxt**, and **SvelteKit**. Push to GitHub and your site deploys. Open the panel and you see live traffic, errors, attacks, and server load. It runs on your hardware, with no per-seat pricing and no vendor in the middle.
 
 It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine, and Tailwind) and follows the design of [Coolify](https://coolify.io). Unlike Coolify it does **not** use Docker: PHP sites run on nginx and PHP-FPM (Laravel with Supervisor workers), Node servers run under PM2, and front-end builds are served as files by nginx.
 
@@ -21,6 +21,12 @@ It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine,
   </Card>
   <Card title="Backend, frontend, full-stack" icon="layer-group" href="/websites/frameworks">
     PHP 8.0–8.5, Node 20–24 servers under PM2, and React, Vue, Angular, Svelte, and Astro builds served by nginx.
+  </Card>
+  <Card title="Example projects" icon="flask" href="/websites/example-projects">
+    No code yet? Start any framework from a small working example, then deploy it.
+  </Card>
+  <Card title="S3 backups" icon="cloud-arrow-up" href="/backups/backups">
+    Schedule database and folder backups to your own bucket. Restore a database, one table, or one folder.
   </Card>
   <Card title="Live monitoring" icon="chart-line" href="/monitoring/overview">
     Requests, response times, uptime, grouped Laravel errors, and a live request feed.
@@ -55,6 +61,7 @@ flowchart LR
   CF[Cloudflare tunnel] --> N
   N -->|request log| M[Monitoring]
   M -->|alerts| T[Telegram]
+  P -->|schedules| B[S3 backups]
 ```
 
 ## Next steps
