@@ -5,9 +5,9 @@ description: "Self-hosted deploys for Laravel and Next.js, on one Ubuntu server 
 
 <img className="rounded-xl" src="/images/banner-dark.png" alt="Laravelify" />
 
-Laravelify is an open-source control panel that turns one Ubuntu server into a home for your **Laravel** and **Next.js** apps. Push to GitHub and your site deploys. Open the panel and you see live traffic, errors, attacks, and server load. It runs on your hardware, with no per-seat pricing and no vendor in the middle.
+Laravelify is an open-source control panel that turns one Ubuntu server into a home for your apps: **Laravel** and PHP backends, **Express**, **NestJS**, and other Node.js servers, **React**, **Vue.js**, **Angular**, **Svelte**, and **Astro** front ends, and full-stack **Next.js**, **Nuxt**, and **SvelteKit**. Push to GitHub and your site deploys. Open the panel and you see live traffic, errors, attacks, and server load. It runs on your hardware, with no per-seat pricing and no vendor in the middle.
 
-It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine, and Tailwind) and follows the design of [Coolify](https://coolify.io). Unlike Coolify it does **not** use Docker: Laravel sites run on nginx and PHP-FPM with Supervisor workers, and Next.js sites run as a standalone build under PM2.
+It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine, and Tailwind) and follows the design of [Coolify](https://coolify.io). Unlike Coolify it does **not** use Docker: PHP sites run on nginx and PHP-FPM (Laravel with Supervisor workers), Node servers run under PM2, and front-end builds are served as files by nginx.
 
 <Note>
   Laravelify is **self-hosted only**. There is no cloud version: you install it on your own server with one command, and everything stays there.
@@ -19,8 +19,8 @@ It is built with the same stack as the apps it hosts (Laravel, Livewire, Alpine,
   <Card title="Git push to deploy" icon="rocket" href="/websites/github">
     GitHub App or token, webhooks, full build logs, one-click redeploys.
   </Card>
-  <Card title="Laravel and Next.js" icon="layer-group" href="/websites/groups-and-websites">
-    PHP 8.0–8.5 with Supervisor workers, or Node 20–24 standalone builds under PM2.
+  <Card title="Backend, frontend, full-stack" icon="layer-group" href="/websites/frameworks">
+    PHP 8.0–8.5, Node 20–24 servers under PM2, and React, Vue, Angular, Svelte, and Astro builds served by nginx.
   </Card>
   <Card title="Live monitoring" icon="chart-line" href="/monitoring/overview">
     Requests, response times, uptime, grouped Laravel errors, and a live request feed.
@@ -49,8 +49,9 @@ flowchart LR
   GH[GitHub push] -->|webhook| P[Laravelify panel]
   P -->|queue job| D[Deploy: git, composer/npm, migrate, build]
   D --> N[nginx]
-  N --> L[Laravel: PHP-FPM + Supervisor]
-  N --> X[Next.js: PM2]
+  N --> L[PHP: PHP-FPM + Supervisor]
+  N --> X[Node servers: PM2]
+  N --> S[Front ends: built files]
   CF[Cloudflare tunnel] --> N
   N -->|request log| M[Monitoring]
   M -->|alerts| T[Telegram]

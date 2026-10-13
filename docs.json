@@ -91,6 +91,7 @@
         "group": "Websites",
         "pages": [
           "websites/groups-and-websites",
+          "websites/frameworks",
           "websites/laravel",
           "websites/nextjs",
           "websites/github",

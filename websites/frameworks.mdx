@@ -1,0 +1,138 @@
+---
+title: "Frameworks"
+description: "Deploy backends, frontends, and full-stack apps: PHP, Node.js, React, Vue, Angular, and more."
+---
+
+Pick what you are deploying when you add a website. Laravelify groups the choices into **Backend**, **Frontend**, and **Full-stack**, and each one runs the way that suits it:
+
+| Runs as | How | Used by |
+| --- | --- | --- |
+| **PHP-FPM** | nginx → PHP-FPM, with Supervisor workers for Laravel | Laravel, PHP |
+| **PM2** | nginx → a Node server kept running by PM2 | Express, NestJS, Node.js, Next.js, Nuxt, SvelteKit |
+| **nginx** | the app is built once, nginx serves the files | React, Vue.js, Angular, Svelte, Astro, Static HTML |
+
+## What you can deploy
+
+### Backend
+
+<Tabs>
+  <Tab title="PHP">
+    | | Language | Best for |
+    | --- | --- | --- |
+    | **Laravel** | PHP | APIs, SaaS backends, and admin panels. Queues, scheduler, and Reverb included |
+    | **PHP** | PHP | Existing and custom PHP apps (Symfony, Slim, CodeIgniter, your own) |
+  </Tab>
+  <Tab title="TypeScript / JavaScript">
+    | | Language | Best for |
+    | --- | --- | --- |
+    | **Express** | JavaScript / TypeScript | REST APIs, webhooks, and small services |
+    | **NestJS** | TypeScript | Large, structured APIs and enterprise back ends |
+    | **Node.js** | JavaScript / TypeScript | Anything that listens on a port: Fastify, Hono, Koa, bots |
+  </Tab>
+</Tabs>
+
+### Frontend
+
+| | Language | Best for |
+| --- | --- | --- |
+| **React** | TypeScript / JavaScript | Interactive SPAs, dynamic tools, and SaaS dashboards |
+| **Vue.js** | JavaScript | Rapid development and mid-sized web portals |
+| **Angular** | TypeScript | Large corporate software built by big teams |
+| **Svelte** | TypeScript / JavaScript | High-performance apps that must load fast on slow devices |
+| **Astro** | Any framework | Content sites, blogs, portfolios, and marketing pages |
+| **Static HTML** | HTML / CSS / JS | Landing pages and plain sites with no build step |
+
+### Full-stack
+
+| | Language | Best for |
+| --- | --- | --- |
+| **Next.js** | TypeScript / JavaScript | E-commerce, landing pages, and SEO-heavy apps |
+| **Nuxt** | TypeScript / JavaScript | Vue apps that need server rendering and an API |
+| **SvelteKit** | TypeScript / JavaScript | Fast full-stack apps with little code |
+| **Laravel + Livewire** | PHP | The modern SaaS stack in one codebase |
+| **Laravel + Vue / React (Inertia)** | PHP + TypeScript / JavaScript | An SPA feel with Laravel routing and auth |
+
+The two Laravel stacks create a normal Laravel website. Its front-end assets (Vite, Inertia, Livewire's JavaScript) are built on every deploy.
+
+## Backend and frontend as separate sites
+
+Create each part as its own website in the same group, each with its own domain:
+
+| Stack | Frontend | Backend |
+| --- | --- | --- |
+| **Full-JavaScript** | Next.js (`app.example.com`) | Express or NestJS (`api.example.com`) |
+| **Modern SaaS** | Vue.js or React (`app.example.com`) | Laravel (`api.example.com`) |
+
+Point the frontend at the backend's domain (a build-time variable such as `VITE_API_URL`, or `NEXT_PUBLIC_API_URL`), and allow the frontend's domain in the backend's CORS settings.
+
+## What happens on a deploy
+
+<Tabs>
+  <Tab title="PHP">
+    **Laravel:** `composer install`, `APP_KEY`, migrations, `artisan optimize`, and a front-end build when there is a `package.json`. See [Laravel sites](/websites/laravel).
+
+    **PHP:** `composer install` when there is a `composer.json`. The web root is the folder you chose (default `public`, or `.` for the repository root).
+  </Tab>
+  <Tab title="Node servers">
+    1. **Install** with npm, pnpm, or Yarn, picked from your lockfile.
+    2. **Build**, when the type has one (NestJS, Nuxt, SvelteKit, Next.js).
+    3. **Start** under PM2 with the site's Node version, listening on the port Laravelify assigns (the `PORT` environment variable).
+
+    | | Build | Start |
+    | --- | --- | --- |
+    | Express | none | `npm start` |
+    | NestJS | `npm run build` | `node dist/main.js` |
+    | Node.js | none | `npm start` |
+    | Nuxt | `npm run build` | `node .output/server/index.mjs` |
+    | SvelteKit | `npm run build` | `node build/index.js` |
+    | Next.js | `npm run build` | its standalone server (see [Next.js sites](/websites/nextjs)) |
+  </Tab>
+  <Tab title="Frontend builds">
+    1. **Install** dependencies from your lockfile.
+    2. **Build** with `npm run build` (or your own command).
+    3. **Find the output folder** and link it as `public_html`, which nginx serves.
+
+    | | Output folder (detected) | Unknown paths |
+    | --- | --- | --- |
+    | React | `dist` or `build` | `index.html` (client-side routes work on refresh) |
+    | Vue.js | `dist` | `index.html` |
+    | Angular | `dist/<project>/browser`, `dist/<project>`, or `dist` | `index.html` |
+    | Svelte | `dist` or `build` | `index.html` |
+    | Astro | `dist` | 404 |
+    | Static HTML | the repository (or the folder you choose) | 404 |
+  </Tab>
+</Tabs>
+
+## Build settings
+
+Open **Runtime** on the website. Empty fields use the defaults above.
+
+| Setting | For | What it does |
+| --- | --- | --- |
+| Node.js version | Node servers and front-end builds | 20, 22, or 24 for installing, building, and running |
+| Install command | Node servers and front-end builds | Replaces the automatic install, like `npm ci --legacy-peer-deps` |
+| Build command | Node servers and front-end builds | Replaces the default build, like `pnpm build:prod` |
+| Start command | Node servers (not Next.js) | What PM2 runs from the site folder, like `node dist/server.js` |
+| Output folder | Front-end builds | Where the build writes its files; empty means detect it |
+| Web root | PHP | The folder nginx serves; empty means `public` |
+
+<Note>
+  The start command and port are written into the PM2 file. After changing them, click **Regenerate files**, then deploy.
+</Note>
+
+## Environment variables
+
+The **Environment** tab writes the site's `.env` file.
+
+- **Node servers** read it at start through PM2.
+- **Front-end builds** read it while building. Values like `VITE_API_URL`, `NEXT_PUBLIC_*`, or `NUXT_PUBLIC_*` are compiled into the files, so **deploy again** after changing them.
+
+## Requirements per framework
+
+- **Express and Node.js:** the app must listen on `process.env.PORT`.
+- **NestJS:** `npm run build` must produce `dist/main.js` (the default). For another entry file, set the start command.
+- **Next.js:** set `output: 'standalone'` in `next.config`.
+- **Nuxt:** the default Nitro `node-server` preset, which writes `.output/`.
+- **SvelteKit:** use `@sveltejs/adapter-node`, which writes `build/`. Laravelify sets `ORIGIN` from the site's address so form posts work.
+- **Angular, React, Vue, Svelte:** a `build` script in `package.json`.
+- **Astro:** static output (the default). Server rendering needs the Node adapter, which fits **Node.js** with start command `node dist/server/entry.mjs`.

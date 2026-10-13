@@ -45,6 +45,10 @@ Commands from the terminal and the deploy run as `www-data` inside a `systemd-ru
 | Type | Served by | Kept running by |
 | --- | --- | --- |
 | Laravel | nginx → PHP-FPM socket of the site's PHP version | Supervisor (`queue:work`, `schedule:work`, optional Reverb, your own programs) |
-| Next.js | nginx → `127.0.0.1:{port}` | PM2 (`.next/standalone/server.js`) |
+| PHP | nginx → PHP-FPM socket | PHP-FPM only |
+| Express, NestJS, Node.js, Next.js, Nuxt, SvelteKit | nginx → `127.0.0.1:{port}` | PM2 (the start command, or Next.js's standalone server) |
+| React, Vue.js, Angular, Svelte, Astro, Static HTML | nginx serves the built files | nothing: there is no process |
+
+See [Frameworks](/websites/frameworks).
 
 Traffic reaches nginx through a Cloudflare tunnel (`cloudflared` → `http://127.0.0.1:80`), and nginx picks the site by `server_name`.

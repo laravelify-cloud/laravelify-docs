@@ -11,16 +11,17 @@ A **group** is a folder for related websites, like `production`, `staging`, or o
 
 | Field | Notes |
 | --- | --- |
-| Type | **Laravel** or **Next.js**. Chosen once, when the site is created |
+| Type | Backend, Frontend, or Full-stack: Laravel, PHP, Express, NestJS, Node.js, React, Vue.js, Angular, Svelte, Astro, Static HTML, Next.js, Nuxt, or SvelteKit. Chosen once, when the site is created. See [Frameworks](/websites/frameworks) |
 | Name | Shown in the panel |
 | Domain | Like `app.example.com`. nginx uses it as `server_name` |
 | Source | A connected GitHub App, a token, or a public repository URL |
 | Branch | Pushes to this branch deploy (default `main`) |
 | Cloudflare tunnel | Optional. Adds the domain to that tunnel |
-| PHP / Node version | PHP 8.0–8.5 for Laravel, Node 20/22/24 for Next.js |
-| Create a MySQL database | Laravel only: creates a database and user and fills `DB_*` in `.env` |
+| PHP / Node version | PHP 8.0–8.5 for PHP sites, Node 20/22/24 for Node servers and front-end builds |
+| Build settings | Optional install, build, and start commands, and the output folder |
+| Create a MySQL database | PHP sites: creates a database and user and fills `DB_*` in `.env` |
 
-The site is created under `/var/www/{slug}` with an nginx file, process files, and an environment file from templates. Nothing runs until the first deploy.
+The site is created under `/var/www/{slug}` with an nginx file, a process file where the type has one, and an environment file from templates. Nothing runs until the first deploy.
 
 ## The website page
 
@@ -28,19 +29,19 @@ The site is created under `/var/www/{slug}` with an nginx file, process files, a
 | --- | --- |
 | General | Name, domain, source, branch, tunnel, database |
 | Environment | The `.env` file. Saving writes it and clears Laravel's cached config |
-| Runtime | PHP or Node version, port, Reverb; **Regenerate files** from the templates |
+| Runtime | PHP or Node version, port, build and start commands, output folder, Reverb; **Regenerate files** from the templates |
 | Nginx | The site's nginx file. Saving runs `nginx -t` before reloading |
 | Security | Search engine blocking, crawler blocking, basic auth, blocked IPs |
 | Monitoring | Live requests, charts, issues, heartbeats, attacks |
 | Deployments | Deploy log, history, webhook, auto deploy |
 | Logs / Health | Every log file of the site; health checks |
-| Processes | Supervisor programs (Laravel) or the PM2 file (Next.js) |
+| Processes | Supervisor programs (Laravel) or the PM2 file (Node servers). Not shown for PHP and static sites |
 | Terminal / Files | A terminal and a file manager inside the site's folder |
 | Danger zone | Delete the site and everything Laravelify installed for it |
 
 ## Ports
 
-Next.js sites get ports from 3000 upward, Reverb from 8080 upward. Laravelify picks a free one; you can change it on the Runtime tab.
+Node servers (Express, NestJS, Next.js, Nuxt, SvelteKit, Node.js) get ports from 3000 upward, Reverb from 8080 upward. Laravelify picks a free one; you can change it on the Runtime tab.
 
 <Note>
   Changing the PHP or Node version, the port, or Reverb does not overwrite a hand-edited nginx file. Use **Regenerate files** when you want the template again.
