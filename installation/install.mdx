@@ -24,7 +24,9 @@ When it finishes it prints the panel URL. Open `https://panel.example.com/setup`
 
 ## Running it again
 
-Running the install command again repairs or finishes an install, and nothing needs retyping: it shows the answers from last time and asks whether to use them.
+If Laravelify is already installed, running the install command again only updates it. It shows the installed and new version and asks `Update Laravelify only? [Y/n]`. Packages such as PHP, MySQL, Node, and pm2 are not checked or reinstalled. Answer `n`, or run with `LARAVELIFY_REINSTALL=1`, to repair the whole install.
+
+A repair run skips what is already installed, and nothing needs retyping: it shows the answers from last time and asks whether to use them.
 
 ```text
 Found the settings from a previous install:
