@@ -22,6 +22,21 @@ The installer asks for:
 
 When it finishes it prints the panel URL. Open `https://panel.example.com/setup` to create the admin account and turn on two-factor authentication.
 
+## Running it again
+
+Running the install command again repairs or finishes an install, and nothing needs retyping: it shows the answers from last time and asks whether to use them.
+
+```text
+Found the settings from a previous install:
+  Panel domain:            panel.example.com
+  phpMyAdmin domain:       db.example.com
+  MySQL root password:     ******** (saved)
+  Cloudflare tunnel token: ******** (saved)
+Use these settings? [Y/n]
+```
+
+Press <kbd>Enter</kbd> to reuse them, or type `n` to answer every question again. The answers are kept in `/etc/laravelify/install.env`, readable only by root; the uninstaller removes it.
+
 ## Unattended install
 
 Every prompt can be given as an environment variable, which is handy for provisioning scripts:
