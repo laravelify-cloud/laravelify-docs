@@ -4,6 +4,28 @@ description: "Common problems and how to fix them."
 ---
 
 <AccordionGroup>
+  <Accordion title="The panel shows 404 or 'Permission denied' after an update">
+    Version 0.2.0-beta.2 reset `/opt/laravelify` to a mode nginx cannot read. Fix it once, then update again:
+
+    ```bash
+    sudo chmod 755 /opt/laravelify
+    ```
+
+    Releases from 0.2.0-beta.3 keep the permissions.
+  </Accordion>
+
+  <Accordion title="A Nuxt or SvelteKit site fails with 'module is not defined in ES module scope'">
+    The PM2 file was named `ecosystem.config.js`, which breaks in projects with `"type": "module"`. Update to 0.2.0-beta.5 or later: the file is now `ecosystem.config.cjs`, and old files are renamed on the next update.
+  </Accordion>
+
+  <Accordion title="Next.js: next build did not create .next/standalone/server.js">
+    Add `output: "standalone"` to your `next.config` and deploy again.
+  </Accordion>
+
+  <Accordion title="SvelteKit: Could not detect a supported production environment">
+    Install `@sveltejs/adapter-node` and use it in your SvelteKit config instead of `adapter-auto`.
+  </Accordion>
+
   <Accordion title="The installer stops at 'repo.packagist.org could not be fully loaded'">
     A warning, not an error: Composer could not reach Packagist and used its cache. If the install stops there, the server usually cannot reach IPv6 addresses. Prefer IPv4 and run the installer again:
 

@@ -92,6 +92,7 @@
         "pages": [
           "websites/groups-and-websites",
           "websites/frameworks",
+          "websites/example-projects",
           "websites/laravel",
           "websites/nextjs",
           "websites/github",

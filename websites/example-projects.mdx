@@ -1,0 +1,44 @@
+---
+title: "Example projects"
+description: "Try any framework in minutes: Laravelify ships a small working app for each type."
+---
+
+No repository yet? When you add a website, set **Source** to **Example project**. Laravelify copies a small working app for the framework you picked into its own local git repository, then you deploy it like any other site.
+
+Use it to:
+
+- check that your server, PHP and Node versions, and tunnel work before you bring real code
+- see how each framework is built and started
+- start a new site from something that already runs
+
+## Finding a framework fast
+
+The type picker has three tabs: **Backend**, **Frontend**, and **Full-stack**.
+
+- **Search** looks across every framework at once (name, language, runtime).
+- **Pin** a framework with the pin icon and it moves to the top of its tab. Pins are saved in your browser.
+
+## Domain or HTTP port
+
+The **Address** field has two tabs. Choose **Domain** to serve the site on a domain (needed for a Cloudflare tunnel), or **HTTP port** to open it on the server at `http://127.0.0.1:port`. Leave the port empty and the next free one from 8081 is used.
+
+## What each example needs
+
+All 14 examples deploy and answer over HTTP. When you bring your own project, the same points apply:
+
+| Type | Note |
+| --- | --- |
+| **Laravel** | Runs under PHP-FPM with the queue worker and scheduler. |
+| **PHP** | The web root is `public`. |
+| **Express, Node.js** | Needs a `start` script. The port comes from the `PORT` environment variable. |
+| **NestJS** | Built with `nest build`, started with `node dist/main`. If `npm install` fails with a peer-dependency error, add `legacy-peer-deps=true` to an `.npmrc` file. |
+| **React, Vue.js, Svelte, Astro** | Built with Vite or Astro. nginx serves the `dist` folder and falls back to `index.html` for client-side routes. |
+| **Angular** | nginx serves `dist/<project>/browser`, found after the build. |
+| **Static HTML** | No build. The files are served as they are. |
+| **Next.js** | Set `output: "standalone"` in `next.config`. The deploy stops with a clear message when it is missing. |
+| **Nuxt** | Runs `node .output/server/index.mjs` under PM2. |
+| **SvelteKit** | Use `@sveltejs/adapter-node`, not `adapter-auto`. |
+
+<Tip>
+  Backend and frontend as separate sites? Create each as its own website in the same group, and point the frontend at the API's domain.
+</Tip>
