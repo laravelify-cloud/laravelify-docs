@@ -11,6 +11,13 @@ Every website has a **Files** tab, and the sidebar's **File manager** opens all 
 - Open text files in an editor with word wrap and full-screen mode; save with <kbd>Ctrl</kbd>+<kbd>S</kbd>.
 - Upload files, download files or folders, create, rename, move, and delete (deleting asks you to type the name).
 - Saving a Laravel `.env` clears the cached config so the change applies.
+- Tick several items for bulk **Copy to**, **Move to**, **Compress to .zip**, and **Delete**.
+
+### Big jobs run in the background
+
+Zipping, extracting, downloading a folder as `.zip`, and copying or deleting big folders run in the queue worker, so the page never hangs. A list above the files shows each job with its progress. When it finishes you get a message, the folder refreshes, and a folder download starts by itself. Small copies and deletes still happen at once.
+
+If a job stays on **Waiting**, the queue worker is not running. Check it with `sudo supervisorctl status laravelify-queue`.
 
 ## Terminal
 

@@ -44,27 +44,54 @@ Want `app_db` every hour and everything else once a day? Make two schedules.
 
 The empty page offers two shortcuts: **all databases every hour** and **all databases every day**.
 
-Press **Run now** on a schedule to make a backup immediately. The list shows progress and a log for each run.
+Press **Run now** on a schedule to make a backup immediately. Each database appears in the list right away as **Waiting**, then **In progress** and **Finished**; the page updates by itself. If a backup stays on Waiting, the queue worker is not running (`sudo supervisorctl status laravelify-queue`); **Cancel waiting runs** in the schedule's menu clears it.
 
 ## 3. Back up folders
 
-**Backups, Files, New schedule.** Browse the folders inside `/var/www`, add as many as you like, and list what to **skip**: `node_modules`, `vendor`, `.git`, `storage/logs`, or any pattern. A name matches in every folder. The folders are packed into one `tar.gz` per run.
+**Backups, Files, New schedule.** The picker works like the file manager: browse `/var/www`, tick folders and files, and press **Add to backup** or **Skip**. Each row shows whether it is **Included** or **Skipped**, so you can open a site, tick `node_modules` and `.git`, and skip them in one go.
+
+Common skips (`node_modules`, `vendor`, `.git`, `storage/logs`, ...) are one click away. A name is skipped in every folder; a path (`shop/storage/logs`) only there; `*` and `?` work. The folders are packed into one `tar.gz` per run.
 
 ## 4. Restore
 
-Press **Restore** next to any backup that is still in the bucket.
+Press **Restore** at the top of the page. It walks you through three steps:
+
+1. **Database** (or, for files, the backup set): every database with backups, with how many and the newest.
+2. **Backup**: the backups of that database, newest first, with their size.
+3. **What to restore**:
 
 <Tabs>
   <Tab title="Database">
-    - **Whole database**, or **some tables** picked from the list in that backup.
+    - **Whole database**, or **some tables**: search the tables of that backup (with row counts and sizes) and tick them, or **Select all** that match.
     - Choose the database to restore into. The same name overwrites the live data. A new name restores next to it, and the database is created if it does not exist.
     - You confirm with a checkbox before anything is overwritten.
   </Tab>
   <Tab title="Files">
-    - **Everything**, or **one folder** from the backup.
+    - **Everything**, or browse the backup like a folder and tick the folders and files to bring back.
     - **A new restore folder** (the default) unpacks into `laravelify-restore/<date>` and overwrites nothing. **Original place** puts files back where they were, overwriting files with the same name, and asks you to confirm.
   </Tab>
 </Tabs>
+
+The restore icon on a row of the list jumps straight to step 3 for that backup.
+
+## 5. Look inside a backup
+
+The eye icon on a backup shows what is in it, without restoring anything:
+
+- **Tables**, with an approximate row count and size, 25 per page, searchable. Open a table to see its `CREATE TABLE`.
+- **Stored procedures**, **stored functions**, **triggers**, and **events**, each with its SQL and a copy button.
+- For a file backup: the folders and files inside it, with sizes and dates.
+
+New backups are read when they are made. An older backup is read once in the background the first time you open it.
+
+## 6. Download
+
+The download icon prepares a file on the server, then your browser downloads it (progress shows at the top of the page):
+
+- **Choose parts (.sql)**: tick tables (all, or picked ones), stored procedures, functions, triggers, and events. You get one `.sql` file you can run with `mysql`; routines, triggers, and events come with `DROP ... IF EXISTS` first, so it can run twice.
+- **Whole backup**: the file exactly as stored (`.sql.gz` or `.tar.gz`).
+
+Prepared downloads are removed after a day.
 
 ## Alerts
 
