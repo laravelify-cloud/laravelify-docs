@@ -39,6 +39,25 @@ The site is created under `/var/www/{slug}` with an nginx file, a process file w
 | Terminal / Files | A terminal and a file manager inside the site's folder |
 | Danger zone | Delete the site and everything Laravelify installed for it |
 
+## Turn off and on
+
+A website or a whole group can be turned off without deleting anything:
+
+- The address shows a short **This site is turned off** page (HTTP 503) on the same domain and port.
+- Queue workers and the Node process stop, and they do not come back after a reboot.
+- Deploys, pushes from GitHub, and down alerts pause.
+- Files, the database, the environment, and every setting stay. **Turn on** writes the site's files again and brings back exactly what was there.
+
+Turn one website off in its **Danger zone**, or a whole group with **Turn off group** on the group page. A turned-off group turns off every website in it.
+
+## Select several
+
+The **Groups** list and a group's websites have a checkbox on every row and one to select all. With rows selected, a bar shows **Turn on**, **Turn off**, and **Delete**:
+
+- Deleting websites removes their nginx, worker, and PM2 files and the websites in the panel. Their folders in `/var/www` are kept.
+- Only empty groups are deleted. Groups that still have websites are kept, and the panel tells you which.
+- Both ask you to type `delete` first (a copy button pastes it).
+
 ## Ports
 
 Node servers (Express, NestJS, Next.js, Nuxt, SvelteKit, Node.js) get ports from 3000 upward, Reverb from 8080 upward. Laravelify picks a free one; you can change it on the Runtime tab.
