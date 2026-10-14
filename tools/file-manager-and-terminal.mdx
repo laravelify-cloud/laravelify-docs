@@ -13,6 +13,10 @@ Every website has a **Files** tab, and the sidebar's **File manager** opens all 
 - Saving a Laravel `.env` clears the cached config so the change applies.
 - Tick several items for bulk **Copy to**, **Move to**, **Compress to .zip**, and **Delete**.
 
+### Compress to .zip without the heavy folders
+
+**Compress to .zip** (on a selection, or in an item's menu) opens a dialog first. It lists the folders inside your selection that a zip usually does not need, already ticked to leave out: `node_modules`, `vendor`, `.git`, `.next`, `.nuxt`, `.output`, `.svelte-kit`, `.angular`, `.astro`, `.cache`, and Laravel's cached views. Build output (`dist`, `build`) and logs are listed but not ticked. Untick anything you want in the zip, choose its name, and press **Compress**. Select several apps to get them all in one zip.
+
 ### Big jobs run in the background
 
 Zipping, extracting, downloading a folder as `.zip`, and copying or deleting big folders run in the queue worker, so the page never hangs. A list above the files shows each job with its progress. When it finishes you get a message, the folder refreshes, and a folder download starts by itself. Small copies and deletes still happen at once.
