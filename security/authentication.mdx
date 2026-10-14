@@ -36,6 +36,30 @@ To see one, click the **eye** icon and enter your authenticator code. Secrets th
 
 Typing in a saved field replaces the value; leaving it empty keeps the saved one.
 
+## Access prompt for the panel and phpMyAdmin
+
+**Security → Access** puts a browser sign-in box in front of the panel and phpMyAdmin, before any page loads. Scanners and bots never reach the login page or phpMyAdmin at all.
+
+For each of them, choose what the box asks for:
+
+| Choice | How to sign in |
+| --- | --- |
+| **Authenticator code** | Type your current 6-digit code in the Username box (or the Password box). |
+| **Username and password** | A username and password you set on the page. |
+| **Password + code** | The username, then the password with your 6-digit code typed right after it (`mypassword123456`). |
+
+- **Allowed IPs** never see the box. One IP or range per line (`203.0.113.7`, `198.51.100.0/24`, IPv6 too). **Add my IP** adds the one you use now. Behind the Cloudflare tunnel the real visitor IP is used.
+- After a right answer the browser stays signed in for 1 to 72 hours (you choose).
+- Five wrong answers block that IP for 15 minutes.
+- Webhooks (`/hooks/...`) and the health check (`/up`) stay open, so deploys and heartbeats keep working.
+- Saving asks for your authenticator code.
+
+phpMyAdmin is its own app, so Laravelify adds a short block to its nginx file: nginx asks the panel before each phpMyAdmin page. Turning the box off removes the block again.
+
+<Warning>
+  Locked out? On the server run `sudo -u www-data php /opt/laravelify/artisan laravelify:access-off` (add `panel` or `phpmyadmin` to turn off only one).
+</Warning>
+
 ## Reset two-factor from the server
 
 ```bash
