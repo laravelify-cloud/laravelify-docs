@@ -9,11 +9,24 @@ Laravelify has a single admin account. The first visit to the panel goes to `/se
 
 ## Two-factor is required
 
-Right after creating the account you scan a QR code with an authenticator app (Google Authenticator, 1Password, Authy, Bitwarden) and enter the 6-digit code. Until then every page is locked. Later sign-ins at `/login` ask for email, password, and the current code.
+Right after creating the account you set up an authenticator app (Google Authenticator, 1Password, Authy, Bitwarden) and enter the 6-digit code. Until then every page is locked. Later sign-ins at `/login` ask for email, password, and the current code.
+
+The setup page has two choices:
+
+- **New key:** scan the QR code, or copy the key into your app. **Make a different key** gives you another one.
+- **Use my own key:** paste a key you already use in another app or password manager, so one entry in your app gives codes for both. A plain key (`JBSW Y3DP …`, spaces do not matter) or an `otpauth://` link both work. It must be at least 16 characters of A–Z and 2–7.
 
 <Warning>
   Keep the setup key from the QR screen somewhere safe. If you lose the authenticator, you need shell access to the server to reset it.
 </Warning>
+
+## Your account: Security
+
+Open the menu under your name at the bottom of the sidebar and choose **Security**.
+
+- **Change password:** enter the current password and the new one twice, press **Change password**, then enter your authenticator code to confirm.
+- **Show my key:** after your code, shows the key you sign in with, with a copy button, to add it to another app.
+- **New key** or **Use my own key:** replace your authenticator key. Scan the new key (or paste your own), enter the code your app shows for it, press **Continue**, and confirm with a code from the key you use today. Codes from the old key stop working right away.
 
 ## Secrets stay hidden
 
