@@ -46,9 +46,38 @@ The empty page offers two shortcuts: **all databases every hour** and **all data
 
 Press **Run now** on a schedule to make a backup immediately. Each database appears in the list right away as **Waiting**, then **In progress** and **Finished**; the page updates by itself. If a backup stays on Waiting, the queue worker is not running (`sudo supervisorctl status laravelify-queue`); **Cancel waiting runs** in the schedule's menu clears it.
 
+### Full backup
+
+**Full backup** at the top of the page backs up everything right now: every database, or every website. It uses a schedule called *Full backup* that only runs when you start it, so its backups are listed and kept like any other.
+
+### Bulk actions
+
+Tick schedules to run, pause, resume, or delete several at once, and tick backups to delete several from the bucket.
+
+### Progress
+
+A running backup shows what it is doing (dumping, packing, uploading) and, while it uploads to your bucket, a progress bar with the percent.
+
 ## 3. Back up folders
 
 **Backups, Files, New schedule.** The picker works like the file manager: browse `/var/www`, tick folders and files, and press **Add to backup** or **Skip**. Each row shows whether it is **Included** or **Skipped**, so you can open a site, tick `node_modules` and `.git`, and skip them in one go.
+
+**Every website** backs up each website in its own archive, including websites you add later, and skips what a deploy rebuilds, by site type:
+
+| Site type | Skipped |
+| --- | --- |
+| Every site | `node_modules`, `.git` |
+| Laravel | `vendor`, `public/build`, `bootstrap/cache`, `storage/logs`, `storage/framework/cache`, `sessions`, `views` |
+| PHP | `vendor` |
+| Next.js | `.next` |
+| Nuxt | `.nuxt`, `.output` |
+| SvelteKit | `.svelte-kit`, `build` |
+| Express, NestJS, Node.js | `dist`, `.cache` |
+| React, Vue.js, Svelte | `dist`, `build` |
+| Angular | `dist`, `.angular` |
+| Astro | `dist`, `.astro` |
+
+Adding a website folder by hand skips the same folders for you; remove any you want to keep.
 
 Common skips (`node_modules`, `vendor`, `.git`, `storage/logs`, ...) are one click away. A name is skipped in every folder; a path (`shop/storage/logs`) only there; `*` and `?` work. The folders are packed into one `tar.gz` per run.
 
@@ -95,7 +124,7 @@ Prepared downloads are removed after a day.
 
 ## Alerts
 
-In **Settings, Telegram bot**, **A backup or restore failed** is on by default, and **A backup finished** can be switched on.
+In **Settings, Telegram bot**, **A backup or restore failed** and **A backup finished** are on by default. When a schedule finishes you get one message listing each backup with its size, and each name is a **download link** that works for 24 hours (a signed link to your bucket; the keys are never in it). If you saved your Telegram events before, tick **A backup finished** there once.
 
 ## Good to know
 
