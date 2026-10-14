@@ -1,6 +1,8 @@
 # Laravelify docs
 
-The documentation at **https://docs.laravelify.cloud**, built with [Mintlify](https://mintlify.com).
+The documentation at **https://docs.laravelify.cloud**, built with [Mintlify](https://mintlify.com). It covers [Laravelify](https://github.com/laravelify-cloud/laravelify), the open-source self-hosted deployment panel: installation, deploying any app, backups, monitoring, security, and troubleshooting.
+
+[Website](https://laravelify.cloud) · [Panel repository](https://github.com/laravelify-cloud/laravelify) · [Releases](https://github.com/laravelify-cloud/laravelify/releases)
 
 ```bash
 npx mint dev       # preview at http://localhost:3000
