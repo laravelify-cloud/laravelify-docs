@@ -9,9 +9,9 @@ description: "Timezone, date format, and the panel's other settings."
 
 | Setting | Options |
 | --- | --- |
-| Timezone | All IANA timezones, with today's UTC offset. **Use my timezone** takes it from the browser |
-| Date format | `2026-10-12`, `12.10.2026`, `12/10/2026`, `10/12/2026`, `12 Oct 2026`, `Oct 12, 2026`, … |
-| Time format | 24-hour or 12-hour, with or without seconds |
+| Timezone | **Automatic** (the default): everyone sees their own browser's timezone. Or one of all IANA timezones for everyone; **Use my timezone for everyone** picks yours |
+| Date format | **Automatic** (the default) follows the browser's language and country: `14.10.2026` in Azerbaijan, `10/14/2026` in the US, `14/10/2026` in the UK. Or a fixed format: `2026-10-12`, `12.10.2026`, `Oct 12, 2026`, … |
+| Time format | **Automatic** (the default) uses 12 or 24 hours like the browser's country. Or a fixed 24-hour or 12-hour format, with or without seconds |
 | Relative times | "5 minutes ago" for recent events (full date on hover), or the full date everywhere |
 
 Stored times stay in UTC; only the display changes.
@@ -23,3 +23,5 @@ Stored times stay in UTC; only the display changes.
 | Telegram bot | Bot token, chat, events and topics, disk limit. See [Telegram alerts](/monitoring/telegram) |
 | Links | Your own sidebar shortcuts |
 | GitHub token | A personal access token for private repositories. See [GitHub](/websites/github) |
+
+Everything is stored in UTC. Only what each person sees changes, so two people in different countries see the same moment in their own time.
