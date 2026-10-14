@@ -13,6 +13,15 @@ Every website has a **Files** tab, and the sidebar's **File manager** opens all 
 - Saving a Laravel `.env` clears the cached config so the change applies.
 - Tick several items for bulk **Copy to**, **Move to**, **Compress to .zip**, and **Delete**.
 
+### Trash
+
+Deleting in the file manager moves files and folders to the **Trash** (the button next to **New folder** shows how many are in it), so nothing is lost by a wrong click.
+
+- **Restore** puts an item back where it was. If that name is taken again, it comes back as `name (restored)`.
+- Deleting the same path more than once keeps every version. Open **N versions** to see when each was deleted and by whom, and restore the one you want.
+- **Delete for good** (one version) and **Empty trash** ask for the current code from your authenticator app.
+- Each website's file manager has its own trash. Items are kept until you delete them for good, so empty the trash now and then to free the disk.
+
 ### Compress to .zip without the heavy folders
 
 **Compress to .zip** (on a selection, or in an item's menu) opens a dialog first. It lists the folders inside your selection that a zip usually does not need, already ticked to leave out: `node_modules`, `vendor`, `.git`, `.next`, `.nuxt`, `.output`, `.svelte-kit`, `.angular`, `.astro`, `.cache`, and Laravel's cached views. Build output (`dist`, `build`) and logs are listed but not ticked. Untick anything you want in the zip, choose its name, and press **Compress**. Select several apps to get them all in one zip.
