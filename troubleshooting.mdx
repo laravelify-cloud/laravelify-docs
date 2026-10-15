@@ -7,11 +7,17 @@ description: "Common problems and how to fix them."
   <Accordion title="Migrations fail: 1419 You do not have the SUPER privilege and binary logging is enabled">
     MySQL 8 keeps a binary log, and then only SUPER may create triggers, functions, and procedures. Update to 0.3.0-beta.19 or later: the update turns on `log_bin_trust_function_creators` (with `SET PERSIST`, so no restart), and new servers have it from the start. Then deploy the site again.
 
-    By hand, on the server:
+    By hand, on the server (MySQL's root has a password on Laravelify servers, so plain `sudo mysql` is refused; this uses the panel's saved login):
 
     ```bash
-    sudo mysql -e "SET PERSIST log_bin_trust_function_creators = 1"
+    cd /opt/laravelify && sudo -u www-data php artisan laravelify:mysql-defaults
     ```
+  </Accordion>
+
+  <Accordion title="phpMyAdmin does not import a .sql file (No data was received / file too large)">
+    Ubuntu's PHP accepts only 2 MB uploads. Update to 0.3.0-beta.20 or later: phpMyAdmin and the panel then accept 256 MB and run up to 10 minutes. The Import page shows the limit under the file picker.
+
+    Before importing a full dump into a site's database, drop the tables the site's migrations already made, or the import stops at "Table already exists". Dumps with triggers need the setting from the entry above.
   </Accordion>
 
   <Accordion title="First deploy of a Laravel site with a database: Access denied for user">
