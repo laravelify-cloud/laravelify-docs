@@ -4,6 +4,19 @@ description: "Common problems and how to fix them."
 ---
 
 <AccordionGroup>
+  <Accordion title="Migrations fail: 1419 You do not have the SUPER privilege and binary logging is enabled">
+    MySQL 8 keeps a binary log, and then only SUPER may create triggers, functions, and procedures. Update to 0.3.0-beta.19 or later: the update turns on `log_bin_trust_function_creators` (with `SET PERSIST`, so no restart), and new servers have it from the start. Then deploy the site again.
+
+    By hand, on the server:
+
+    ```bash
+    sudo mysql -e "SET PERSIST log_bin_trust_function_creators = 1"
+    ```
+  </Accordion>
+
+  <Accordion title="First deploy of a Laravel site with a database: Access denied for user">
+    Before 0.3.0-beta.18 the migrations ran before the panel created the database and its user. Update and deploy again; the database is now made first.
+  </Accordion>
   <Accordion title="The panel shows 404 or 'Permission denied' after an update">
     Version 0.2.0-beta.2 reset `/opt/laravelify` to a mode nginx cannot read. Fix it once, then update again:
 
