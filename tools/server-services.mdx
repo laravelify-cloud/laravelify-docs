@@ -18,3 +18,12 @@ Sites use the PHP socket `unix:/run/php/php{version}-fpm.sock` of their version.
 
 - **Server → Ports** shows which ports are in use and by which site.
 - **Server → Processes** lists every Supervisor program and PM2 app on the server, with restart, start, stop, and logs.
+
+## Nginx page
+
+**Server → Nginx** shows what nginx does on this machine:
+
+- **Test nginx** runs `nginx -t` on every config and shows the result, with nginx's own error message when it fails.
+- **Sites and domains** lists every server block with its domains, ports, where it sends traffic (a proxy, PHP, files, or a redirect), the website that owns it, and the file. Files nginx loads that Laravelify did not write are marked **Not managed by Laravelify**.
+- **Conflicts**: two server blocks answering for the same domain and port are called out (nginx uses the first one it loads).
+- **Ports nginx listens on**, **Error log** (the last lines of `/var/log/nginx/error.log`), and every **config file**, read-only. Change a site's file on its own Nginx tab.
