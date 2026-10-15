@@ -67,23 +67,40 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 
 | Tool | What it does |
 | --- | --- |
-| `list-groups`, `create-group` | See and make groups |
-| `list-site-types` | The kinds of app it can deploy, and the PHP and Node versions |
-| `list-sources` | The connected GitHub Apps (and their repositories) and Cloudflare tunnels |
-| `list-websites`, `get-website` | What runs on the server, with the last deployment. Environment variable names only, never values |
-| `create-website` | Create a site from a repository (or an example project) on a domain or HTTP port, with env variables and a MySQL database, and deploy it |
-| `deploy-website`, `get-deployment` | Deploy again and follow the status and the end of the log |
-| `update-environment` | Set or remove `.env` variables |
-| `upload-file` | Put a file the repository does not carry into the site (like a Firebase key in `storage/app/private`), or unpack a `.zip`, `.tar.gz`, or `.tgz` into a folder. Up to 20 MB |
+| **Deploy** | |
+| `create-website` | Create a site from a repository (or an example project) on a domain or HTTP port, with `www` and other domains, env variables and a MySQL database, and deploy it |
+| `deploy-website`, `cancel-deployment` | Deploy again, or stop a deploy that hangs |
+| `get-deployment`, `list-deployments` | Follow a deploy's status and log, and see the history |
+| **Look** | |
+| `list-websites`, `get-website` | What runs on the server, with domains and the last deployment |
+| `list-groups`, `list-site-types`, `list-sources`, `list-ports` | Groups, the kinds of app, the GitHub Apps (and their repositories), tunnels, and which port is used by what |
+| `server-status` | CPU, memory, disk, uptime, and the state of nginx, MySQL, Redis, Supervisor, PHP-FPM, and the tunnel |
+| **Change** | |
+| `update-website` | Name, repository, branch, auto deploy, GitHub App, PHP and Node version, install/build/start commands, output folder |
+| `set-domains`, `sync-cloudflare` | One main domain plus any number of extra ones (`www`, a second domain) for the same site, in nginx, the tunnel, and Cloudflare DNS |
+| `get-environment`, `update-environment` | Read (secrets hidden unless you ask) and set or remove `.env` variables |
 | `get-nginx`, `update-nginx` | Read and change a site's nginx block, for example to send OAuth or payment callback paths to a Laravel API. nginx checks it first; a rejected file is put back |
-| `list-ports` | Which port is used by what, including apps still running from an old server |
-| `set-website-enabled` | Turn a site off or on |
-
-Deleting websites and changing server settings are not available through MCP; do those in the panel.
+| `set-website-enabled`, `restart-website` | Turn a site off or on; restart its PM2 app or Supervisor workers |
+| **Debug** | |
+| `get-logs`, `check-website` | The Laravel, worker, PM2, and nginx logs; a health check of the site, its workers, nginx, and the last deploy |
+| `run-command` | One command in the site's folder as the web user, like `php artisan migrate --force` (the same as the panel's Terminal) |
+| **Files and data** | |
+| `list-files`, `read-file` | Browse a site's folder and read text files (`.env` only through `get-environment`) |
+| `upload-file` | Put a file the repository does not carry into the site (like a Firebase key in `storage/app/private`), or unpack a `.zip`, `.tar.gz`, or `.tgz` into a folder. Up to 20 MB |
+| `delete-file` | Move a file or folder to the panel's Trash, where it can be restored |
+| `import-database`, `get-task` | Import a `.sql` or `.sql.gz` dump from the site's folder into its database as the site's own database user, in the background |
+| **Backups** | |
+| `list-backups`, `run-backup` | See the S3 backups and start one (or a full backup) now |
+| **Clean up** | |
+| `delete-website`, `update-group`, `delete-group`, `create-group` | Delete a site (its folder and database stay), rename or delete groups. Deleting asks for the site's slug as confirmation |
 
 ## Deploying a folder from your computer
 
 The server cannot read files on your computer, so the assistant pushes the folder to a new private GitHub repository first (`gh repo create --private --source . --push`), then deploys that repository. Make sure your Laravelify GitHub App can read it (GitHub → **Settings → Applications** → the App → **Repository access**). After that, every push deploys by itself.
+
+## Domains: one site, many names
+
+A website has one main domain and any number of extra domains that open the same site, so you never need a second website for `www.example.com` or for a second domain. Ask for it in words ("deploy this on x.com and www.x.com, and y.com too") and the assistant uses `include_www` and `aliases`, or `set-domains` later. nginx answers on all of them, and on a Cloudflare tunnel they are added to the tunnel and DNS when you saved a Cloudflare API token in **Settings → Cloudflare** (see [Cloudflare tunnels](/websites/cloudflare-tunnels)).
 
 ## Private files and ports
 
@@ -92,7 +109,7 @@ The server cannot read files on your computer, so the assistant pushes the folde
 
 ## Moving from an old server
 
-- **Databases.** With `create_database`, the site uses the MySQL database and login the panel makes. `DB_*` values from an old `.env` are left out, so the old server's login cannot lock the site out. Import your data into the new database (phpMyAdmin, or `mysql` on the server); MCP does not import dumps.
+- **Databases.** With `create_database`, the site uses the MySQL database and login the panel makes. `DB_*` values from an old `.env` are left out, so the old server's login cannot lock the site out. Import your data into the new database (phpMyAdmin, or `mysql` on the server); `import-database` can import it from the site's folder (put the dump there first with `upload-file` for small ones, or copy it with `scp` for big ones).
 - **APP_KEY.** Keep the old server's `APP_KEY` in the env so data it encrypted still opens. A deploy only creates a key when there is none.
 - **Special nginx rules.** Paths the old nginx sent elsewhere (callbacks, webhooks) can be added with `update-nginx`.
 - **Allow the tools in Claude Code.** In auto mode Claude Code may ask before each Laravelify call or before reading backup files. Allow them once: run `/permissions` in Claude Code and add `mcp__laravelify`.

@@ -13,7 +13,8 @@ A **group** is a folder for related websites, like `production`, `staging`, or o
 | --- | --- |
 | Type | Backend, Frontend, or Full-stack: Laravel, PHP, Express, NestJS, Node.js, React, Vue.js, Angular, Svelte, Astro, Static HTML, Next.js, Nuxt, or SvelteKit. Chosen once, when the site is created. See [Frameworks](/websites/frameworks) |
 | Name | Shown in the panel |
-| Domain | Like `app.example.com`. nginx uses it as `server_name` |
+| Domain | Like `example.com`. nginx uses it as `server_name`. Tick **Also open on www.example.com** to answer on both |
+| Other domains | Optional, one per line. They all open this same website, so one app needs no second website. See [Several domains](#several-domains) |
 | Source | A connected GitHub App, a token, or a public repository URL |
 | Branch | Pushes to this branch deploy (default `main`) |
 | Cloudflare tunnel | Optional. Adds the domain to that tunnel |
@@ -38,6 +39,10 @@ The site is created under `/var/www/{slug}` with an nginx file, a process file w
 | Processes | Supervisor programs (Laravel) or the PM2 file (Node servers). Not shown for PHP and static sites |
 | Terminal / Files | A terminal and a file manager inside the site's folder |
 | Danger zone | Delete the site and everything Laravelify installed for it |
+
+## Several domains
+
+A website has one main domain and any number of **other domains** (a `www` name, a second domain). Add them when you create the site, or on its **General** tab (**Other domains**, with a one-click **Add www** button). nginx's `server_name` lists all of them, and a site on a Cloudflare tunnel gets a tunnel route for each. With a Cloudflare API token ([Settings → Cloudflare](/websites/cloudflare-tunnels)) Laravelify also adds each domain's DNS record. A domain can belong to only one website.
 
 ## Turn off and on
 

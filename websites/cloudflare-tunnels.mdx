@@ -17,10 +17,20 @@ A Cloudflare tunnel connects the server to Cloudflare from the inside. Visitors 
   <Step title="Use it on websites">
     On each website's **General** tab, pick the tunnel. Its domain is added to the tunnel's ingress.
   </Step>
-  <Step title="Add the public hostname">
-    In Cloudflare, tunnel → **Public hostnames** → add the site's domain with the service `http://localhost:80`.
+  <Step title="Add the public hostname and DNS">
+    Either let Laravelify do it (next section), or in Cloudflare open the tunnel → **Public hostnames** and add each of the site's domains with the service `http://localhost:80`.
   </Step>
 </Steps>
+
+## Let Laravelify add the route and DNS
+
+With a Cloudflare API token, Laravelify adds each domain of a website to the tunnel and creates the DNS record, every time you save a domain on the website (or create the website):
+
+1. Cloudflare → **My Profile → API Tokens → Create Token → Create Custom Token**.
+2. Permissions: **Account → Cloudflare Tunnel → Edit**, **Zone → DNS → Edit**, **Zone → Zone → Read**. Zone resources: all zones (or the domains you use).
+3. In the panel: **Settings → Cloudflare**, paste the token, **Save token**. The test lists the domains it can change.
+
+What it does for each domain, including `www` and extra domains: a public hostname on the tunnel pointing at `http://127.0.0.1:80`, and a proxied `CNAME` to `<tunnel id>.cfargotunnel.com`. It leaves the tunnel's other routes alone, never replaces a DNS record that already exists for something else (it tells you to delete it first), and removes a domain's route and CNAME again when you take the domain off or delete the website. Without a token everything still works and you add the hostname in Cloudflare yourself.
 
 ## Rules
 
