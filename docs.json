@@ -125,6 +125,7 @@
       {
         "group": "Tools",
         "pages": [
+          "tools/mcp",
           "tools/file-manager-and-terminal",
           "tools/logs-and-health",
           "tools/server-services",

@@ -1,0 +1,88 @@
+---
+title: "MCP: deploy with an AI assistant"
+description: "Connect Claude Code, Claude Desktop, or Cursor to your panel and let it deploy and manage your websites."
+---
+
+Laravelify has a built-in [MCP](https://modelcontextprotocol.io) server. Connect an AI assistant to it and ask in plain words: *"Deploy acme/shop on shop.example.com with a MySQL database."* It picks the right site type, creates the website, deploys it, follows the log, and fixes what fails.
+
+## 1. Create a token
+
+In the panel open **Settings → MCP**, give the token a name (one per computer or app), and press **Create token**. It asks for your authenticator code, then shows the token **once**. Copy it.
+
+Anyone with the token can manage this panel's websites, so keep it like a password. **Revoke** a token there at any time; the list shows when and from where each one was last used.
+
+## 2. Connect your AI app
+
+The server address is `https://your-panel-domain/mcp`. The **Settings → MCP** page shows these commands with your address and token filled in.
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http laravelify https://panel.example.com/mcp --header "Authorization: Bearer YOUR_TOKEN"
+    ```
+  </Tab>
+  <Tab title="Claude Desktop">
+    **Settings → Developer → Edit config**, add this to `claude_desktop_config.json`, and restart Claude Desktop (needs Node.js):
+
+    ```json
+    {
+      "mcpServers": {
+        "laravelify": {
+          "command": "npx",
+          "args": ["-y", "mcp-remote", "https://panel.example.com/mcp", "--header", "Authorization:${AUTH}"],
+          "env": { "AUTH": "Bearer YOUR_TOKEN" }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Cursor and others">
+    `.cursor/mcp.json` (other apps that take a remote server with headers use the same shape):
+
+    ```json
+    {
+      "mcpServers": {
+        "laravelify": {
+          "url": "https://panel.example.com/mcp",
+          "headers": { "Authorization": "Bearer YOUR_TOKEN" }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## 3. Ask it
+
+- "Deploy **acme/shop** on **shop.example.com** with a MySQL database."
+- "Deploy this project folder to my Laravelify server on **app.example.com**."
+- "Why did the last deploy of **shop** fail? Fix it and deploy again."
+- "Set **MAIL_HOST** and **MAIL_PORT** on **shop**."
+- "Which of my websites are turned off?"
+
+Claude also offers a ready-made **deploy-project** prompt: give it a repository or a folder and a domain.
+
+## What it can do
+
+| Tool | What it does |
+| --- | --- |
+| `list-groups`, `create-group` | See and make groups |
+| `list-site-types` | The kinds of app it can deploy, and the PHP and Node versions |
+| `list-sources` | The connected GitHub Apps (and their repositories) and Cloudflare tunnels |
+| `list-websites`, `get-website` | What runs on the server, with the last deployment. Environment variable names only, never values |
+| `create-website` | Create a site from a repository (or an example project) on a domain or HTTP port, with env variables and a MySQL database, and deploy it |
+| `deploy-website`, `get-deployment` | Deploy again and follow the status and the end of the log |
+| `update-environment` | Set or remove `.env` variables |
+| `set-website-enabled` | Turn a site off or on |
+
+Deleting websites and changing server settings are not available through MCP; do those in the panel.
+
+## Deploying a folder from your computer
+
+The server cannot read files on your computer, so the assistant pushes the folder to a new private GitHub repository first (`gh repo create --private --source . --push`), then deploys that repository. Make sure your Laravelify GitHub App can read it (GitHub → **Settings → Applications** → the App → **Repository access**). After that, every push deploys by itself.
+
+## Good to know
+
+- Deploys started by the assistant show **Mcp** as their trigger, in the panel and in Telegram.
+- `/mcp` signs in with the token only, so the [access prompt](/security/authentication#access-prompt-for-the-panel-and-phpmyadmin) does not get in the way. Ten wrong tokens in a minute block that IP for a minute.
+- Behind the Cloudflare tunnel the address is your panel's normal HTTPS domain; nothing else needs opening.
