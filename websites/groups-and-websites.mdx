@@ -62,7 +62,7 @@ The **Groups** list and a group's websites have a checkbox on every row and one 
 
 ## Ports
 
-Node servers (Express, NestJS, Next.js, Nuxt, SvelteKit, Node.js) get ports from 3000 upward, Reverb from 8080 upward. Laravelify picks a free one; you can change it on the Runtime tab.
+Node servers (Express, NestJS, Next.js, Nuxt, SvelteKit, Node.js) get ports from 3000 upward, Reverb from 8080 upward, and sites without a domain an HTTP port from 8081 upward. Laravelify picks a port nothing uses: not another website, not a service, and not any process listening on the server right now. You can change it on the Runtime tab; **Server → Reserved ports** shows what holds which port.
 
 <Note>
   Changing the PHP or Node version, the port, or Reverb does not overwrite a hand-edited nginx file. Use **Regenerate files** when you want the template again.

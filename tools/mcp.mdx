@@ -59,6 +59,7 @@ The server address is `https://your-panel-domain/mcp`. The **Settings → MCP** 
 - "Why did the last deploy of **shop** fail? Fix it and deploy again."
 - "Set **MAIL_HOST** and **MAIL_PORT** on **shop**."
 - "Which of my websites are turned off?"
+- "Upload the Firebase key from my backup's private.tgz into storage/app/private of the API site."
 
 Claude also offers a ready-made **deploy-project** prompt: give it a repository or a folder and a domain.
 
@@ -73,6 +74,8 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 | `create-website` | Create a site from a repository (or an example project) on a domain or HTTP port, with env variables and a MySQL database, and deploy it |
 | `deploy-website`, `get-deployment` | Deploy again and follow the status and the end of the log |
 | `update-environment` | Set or remove `.env` variables |
+| `upload-file` | Put a file the repository does not carry into the site (like a Firebase key in `storage/app/private`), or unpack a `.zip`, `.tar.gz`, or `.tgz` into a folder. Up to 20 MB |
+| `list-ports` | Which port is used by what, including apps still running from an old server |
 | `set-website-enabled` | Turn a site off or on |
 
 Deleting websites and changing server settings are not available through MCP; do those in the panel.
@@ -80,6 +83,11 @@ Deleting websites and changing server settings are not available through MCP; do
 ## Deploying a folder from your computer
 
 The server cannot read files on your computer, so the assistant pushes the folder to a new private GitHub repository first (`gh repo create --private --source . --push`), then deploys that repository. Make sure your Laravelify GitHub App can read it (GitHub → **Settings → Applications** → the App → **Repository access**). After that, every push deploys by itself.
+
+## Private files and ports
+
+- **Private files.** Keys and certificates are not in Git. After a site's first deploy, the assistant uploads them with `upload-file` (a single file or an archive it unpacks). Deploys keep them: a deploy only resets files that Git tracks. Paths must stay inside the site folder, and links inside archives are skipped.
+- **Ports are picked for you.** Every new site gets a port that nothing uses: not another website, not a Laravelify service, and not anything listening on the server right now (for example an app still running from an old server). Ports from an old server's nginx files do not matter, only the domains do. A port you choose yourself is refused if something holds it, with the name of what holds it.
 
 ## Good to know
 
