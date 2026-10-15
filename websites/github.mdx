@@ -11,7 +11,9 @@ description: "Connect repositories and deploy on every push."
 
     - Works for private repositories.
     - Uses a short-lived token per deploy; nothing long-lived is stored in the site.
-    - Pushes are delivered to the panel automatically. No webhook to add per repository.
+    - Auto deploy is on as soon as the site uses the App: every push to the site's branch deploys it. No webhook to add per repository. The **Deployments** tab shows **Automatic**.
+    - If pushes do not arrive, check that the App is installed on that repository (GitHub → **Settings → Applications → your App → Repository access**).
+    - **Pull request previews** is not used yet; leave it off so the App does not ask for extra permissions.
   </Tab>
   <Tab title="Personal access token">
     **Settings → GitHub token**. Create a fine-grained token on GitHub with **Contents: read** for the repositories, and paste it. It is stored encrypted.
