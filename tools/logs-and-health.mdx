@@ -16,6 +16,10 @@ Website → **Logs** lists every log of the site:
 
 Follow a log live, search it, wrap lines, copy, or clear it.
 
+### Times in your timezone
+
+A log is written in one timezone: the app's, which is UTC unless the site's `.env` sets `APP_TIMEZONE` (nginx's error log uses the server's). The viewer shows the timestamp at the start of each line in **your** timezone (Settings → General, or your browser's), and nginx's access log offset (`+0000`) becomes yours too. The **clock** button above the log switches back to the times as written. A timestamp inside a message is never changed, and search, copy, and download follow what you see.
+
 ## Health
 
 Website → **Health** runs checks and explains each result:
