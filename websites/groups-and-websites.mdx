@@ -51,6 +51,8 @@ The **Redirects** tab (under Settings) sends visitors somewhere else, in two kin
 - **Domain redirect.** `apply.coupons` and `www.apply.coupons` can open another site, for example `https://supercell.apply.coupons`. Leave the destination blank to send the domain to this website's own address. The path and query are kept by default (`apply.coupons/a?b=1` becomes `supercell.apply.coupons/a?b=1`), and you choose 301 or 302 (or 307 / 308 when the request method must stay). On a Cloudflare tunnel the redirecting domain is added to the tunnel and DNS like the website's other domains.
 - **Page redirect.** `/old-page` goes to `/new-page` or to a full URL. Choose **This folder and everything under it** to redirect a whole path like `/blog/`.
 
+A domain redirect reaches the server in one of two ways: through the **Cloudflare tunnel** (the default; the domain is added as a tunnel route, like your other domains) or through the **Server IP (A record, port 80)**: nginx answers on port 80, no tunnel route is added, and with a Cloudflare token Laravelify creates a proxied A record to the server's public IP. The IP way needs port 80 open in the firewall, and the domain's Cloudflare SSL/TLS mode set to Flexible.
+
 Saving rewrites nginx (domain redirects as their own `server` blocks at the end of the file, page redirects inside the website's first `server` block, both marked as managed by the panel) and reloads it. nginx checks the file first; a rejected file is put back and nothing changes. A domain that is one of this website's own domains, or belongs to another website, cannot be used as a redirect. Your MCP assistant does the same with `set-redirects`.
 
 ## Turn off and on
