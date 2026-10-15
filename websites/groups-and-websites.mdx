@@ -44,6 +44,15 @@ The site is created under `/var/www/{slug}` with an nginx file, a process file w
 
 A website has one main domain and any number of **other domains** (a `www` name, a second domain). Add them when you create the site, or on its **General** tab (**Other domains**, with a one-click **Add www** button). nginx's `server_name` lists all of them, and a site on a Cloudflare tunnel gets a tunnel route for each. With a Cloudflare API token ([Settings → Cloudflare](/websites/cloudflare-tunnels)) Laravelify also adds each domain's DNS record. A domain can belong to only one website.
 
+## Redirects
+
+The **Redirects** tab (under Settings) sends visitors somewhere else, in two kinds:
+
+- **Domain redirect.** `apply.coupons` and `www.apply.coupons` can open another site, for example `https://supercell.apply.coupons`. Leave the destination blank to send the domain to this website's own address. The path and query are kept by default (`apply.coupons/a?b=1` becomes `supercell.apply.coupons/a?b=1`), and you choose 301 or 302 (or 307 / 308 when the request method must stay). On a Cloudflare tunnel the redirecting domain is added to the tunnel and DNS like the website's other domains.
+- **Page redirect.** `/old-page` goes to `/new-page` or to a full URL. Choose **This folder and everything under it** to redirect a whole path like `/blog/`.
+
+Saving rewrites nginx (domain redirects as their own `server` blocks at the end of the file, page redirects inside the website's first `server` block, both marked as managed by the panel) and reloads it. nginx checks the file first; a rejected file is put back and nothing changes. A domain that is one of this website's own domains, or belongs to another website, cannot be used as a redirect. Your MCP assistant does the same with `set-redirects`.
+
 ## Turn off and on
 
 A website or a whole group can be turned off without deleting anything:

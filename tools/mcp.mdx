@@ -78,6 +78,7 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 | **Change** | |
 | `update-website` | Name, repository, branch, auto deploy, GitHub App, PHP and Node version, install/build/start commands, output folder |
 | `set-domains`, `sync-cloudflare` | One main domain plus any number of extra ones (`www`, a second domain) for the same site, in nginx, the tunnel, and Cloudflare DNS |
+| `set-redirects` | Send a domain (`apply.coupons`, `www.apply.coupons`) to this site or any URL, or one page to another, in nginx and the tunnel |
 | `get-environment`, `update-environment` | Read (secrets hidden unless you ask) and set or remove `.env` variables |
 | `get-nginx`, `update-nginx` | Read and change a site's nginx block, for example to send OAuth or payment callback paths to a Laravel API. nginx checks it first; a rejected file is put back |
 | `set-website-enabled`, `restart-website` | Turn a site off or on; restart its PM2 app or Supervisor workers |
