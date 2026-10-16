@@ -5,7 +5,9 @@ description: "One admin account, an authenticator app, and secrets behind your c
 
 ## One admin
 
-Laravelify has a single admin account. The first visit to the panel goes to `/setup`; after that account exists, there is no registration page.
+Laravelify has a single admin account. The first visit to the panel goes to `/setup`, which needs the token from the installer's setup link; after that account exists, there is no registration page.
+
+Logging in is rate limited: five wrong answers (password or authenticator code) for one account from one IP, or twenty from one IP, pause logins for five minutes. The password and the code are both checked before a session starts.
 
 ## Two-factor is required
 

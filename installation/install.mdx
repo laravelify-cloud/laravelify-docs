@@ -20,7 +20,7 @@ The installer asks for:
 | phpMyAdmin domain | `db.example.com` | phpMyAdmin's address |
 | Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare |
 
-When it finishes it prints the panel URL. Open `https://panel.example.com/setup` to create the admin account and turn on two-factor authentication.
+When it finishes it prints the setup link, like `https://panel.example.com/setup?token=...`. Open it to create the admin account and turn on two-factor authentication. Without the token `/setup` does not open, so nobody who finds a fresh panel first can claim it (the token is also in `/opt/laravelify/.env` as `LARAVELIFY_SETUP_TOKEN`).
 
 ## Running it again
 
@@ -96,7 +96,7 @@ The panel lives in `/opt/laravelify`. Sites live in `/var/www/{slug}`.
     Tunnel → **Public hostnames**: `panel.example.com` → `http://localhost:80` and `db.example.com` → `http://localhost:80`.
   </Step>
   <Step title="Create the admin and enable 2FA">
-    Open `https://panel.example.com/setup`.
+    Open the setup link the installer printed (`https://panel.example.com/setup?token=...`).
   </Step>
   <Step title="Set a Redis password">
     Redis starts without a password. Set one under **Server → Redis**.
