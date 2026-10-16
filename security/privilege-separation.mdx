@@ -50,7 +50,7 @@ A site's user is `lfy-` followed by its slug (`lfy-shop` for `shop`). Slugs long
 
 - Rendered files must come from the panel's own `storage/` (owned by `laravelify`, writable by nobody else).
 - **nginx files** of a site may only log to `/var/log/nginx` or `/var/log/laravelify`, include files under `/etc/nginx`, keep temp and cache folders under nginx's own, and send PHP to the site's own pool. `load_module`, `user`, Lua, Perl, and njs are refused.
-- **Supervisor files** may only hold `[program:<site>-…]` sections. Every program runs as the website's user and logs into `/var/log/laravelify/sites/<site>/`. The panel fills in both when you save, so older configs keep working.
+- **Supervisor files** may only hold `[program:<site>-…]` sections. Every program runs as the website's user and logs into `/var/log/laravelify/sites/<site>/`. The panel fills in both when you save, and renames an older program like `[program:balances-listen]` to `[program:<site>-balances-listen]` (the update and Processes → Save both do this), so older configs keep working.
 - **A website's PHP-FPM pool** is written by the script itself from fixed values; nothing in it comes from the panel.
 - **The Cloudflare tunnel unit** is written by the script itself; only the token comes from the panel.
 - Root never writes through a path inside `/var/www`: the site's `.env`, its log folders, and the "turned off" marker are written as the website's user, so a link planted by a site cannot point root at another file.
