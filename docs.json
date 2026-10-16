@@ -127,6 +127,7 @@
         "pages": [
           "tools/mcp",
           "tools/file-manager-and-terminal",
+          "tools/database",
           "tools/logs-and-health",
           "tools/server-services",
           "tools/settings"

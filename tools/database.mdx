@@ -1,0 +1,42 @@
+---
+title: "Database"
+description: "Browse, search, and change every MySQL database, with a change log that undoes one row at a time."
+---
+
+**Tools → Database** shows every MySQL database on the server with its size and tables. It uses the panel's own MySQL login, so it sees everything the panel manages.
+
+## Databases and tables
+
+- Sort databases and tables by name or size (tables also by rows), and filter them by name.
+- **Back up** sends one database to your backup storage (it shows under **Backups → Databases**).
+- Sizes and row counts are MySQL's own figures and can be a little behind.
+
+## Rows
+
+Open a table to see its rows a page at a time (25 to 500 per page).
+
+- Click a column name to sort, use **Search every column**, or add **Filters** on single columns: contains, =, ≠, starts with, ends with, regex, >, <, NULL, not NULL.
+- Click a row to see every value in full. **Edit** changes it, **Add row** adds one (blank fields get their default or the next number), and **Delete** removes one or many (tick rows first).
+- A table without a primary or unique key is read-only here, because a row could not be found again safely.
+- **Structure** lists the columns with their types, keys, and defaults.
+
+## Triggers, events, procedures, functions
+
+The **Triggers, events, routines** tab lists them. View the definition, **Change** it (if MySQL refuses the new one, the old one is put back), create a **New** one from a `CREATE` statement, or drop it.
+
+## Search everywhere
+
+Find a value in every table of every database, or in the databases you choose, like a passport number. Match it as **contains**, **is exactly**, **starts with**, or **regex** (MySQL's syntax, like `^AZE[0-9]{7}$`), optionally only in columns named like `firstname`. Each result shows the table, the row's key, and the matching values; **Open record** opens it. You can also search **table names** and **column names**.
+
+## Changes and undo
+
+Every row added, edited, or deleted here, and every trigger, event, procedure, or function created, changed, or dropped, is logged with what was there before, under **Changes**.
+
+- **Undo** puts back only that row or object. Rows other people added or changed meanwhile stay as they are.
+- When the row was changed again since your change, Undo stops and shows what changed; **Undo anyway** writes the old values over them.
+- An undo is a change of its own, so it can be undone too.
+- Before deleting rows you can **save a copy of the table** (put back whole from the log with **Restore table copy**) and start a **backup of the whole database**.
+
+<Warning>
+  Changes made outside this tool (by your apps, phpMyAdmin, or migrations) are not in the log and cannot be undone here. For those, restore from a backup.
+</Warning>
