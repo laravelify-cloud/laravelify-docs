@@ -1,0 +1,153 @@
+---
+title: "Users and permissions"
+description: "Which Unix user runs what, and why a hacked website cannot reach other websites, the panel, or root."
+---
+
+The panel and every website run as different Unix users. Code from a website, even a hacked upload in a customer's app, cannot read or change other websites' files, cannot read the panel's `.env` (MySQL root password, app key), cannot use the panel's sudo rule, and cannot reach root through the panel.
+
+## Who runs what
+
+| User | Runs | Can |
+| --- | --- | --- |
+| `laravelify` | The panel: its PHP-FPM pool (`/run/php/laravelify.sock`), the queue worker (deploys), the scheduler, and phpMyAdmin | Read `/opt/laravelify`, write its `storage/`, read site files (it is in the `laravelify-sites` group), run `scripts/host-apply.sh` as root, and run commands as the websites' users |
+| `lfy-<site>` | One website: its own PHP-FPM pool (`/run/php/site-<site>.sock`), its Supervisor workers, its PM2 daemon; its deploy commands (git, Composer, npm, artisan), its terminal, and file manager changes in its folder | Read and write its own folder `/var/www/<site>`. No sudo, no access to other websites, `/opt/laravelify/.env`, or `storage/` |
+| `www-data` | Websites that have not been moved to their own user yet (see [Moving websites to their own users](#moving-websites-to-their-own-users)) | Read and write those websites' folders. No sudo |
+| `laravelify-web` | nginx's worker processes | Read site files (in `laravelify-sites`) and open the PHP-FPM sockets, including the panel's |
+| `root` | nginx's master process, Supervisor, PHP-FPM's master, `host-apply.sh` | Everything |
+
+Two groups tie it together:
+
+- **`laravelify-sites`**: the panel and nginx. Every site folder belongs to this group, so they can read it. A website's user is never in it, so websites cannot read each other.
+- **`laravelify-tenants`**: every website's own user, and nobody else. The panel may run commands as its members (`sudo -u lfy-<site>`).
+
+A site's user is `lfy-` followed by its slug (`lfy-shop` for `shop`). Slugs longer than 28 characters are shortened and end with a short hash, so the name stays within Linux's 32 characters.
+
+## Why each piece is there
+
+- **Each website has its own user.** With one shared user, a hacked site could rewrite every other site's code. Now its user can only touch its own folder: other site folders are closed to it (`750`), and `/var/www` itself belongs to root, so it cannot rename another site's folder either.
+- **Each website has its own PHP-FPM pool.** PHP runs as the site's user. The pool's socket can only be opened by nginx, so one site cannot send FastCGI requests to another site's pool (or the panel's) and run code as it. Pools start PHP only when a request comes in (`pm = ondemand`), so an idle site costs no memory.
+- **Each website has its own HOME, caches, trash, and temp folder** in `/var/lib/laravelify/sites/<site>`. A shared Composer or npm cache would let a hacked site plant a package that another site's next deploy installs.
+- **Deploys run as the website's user.** A deploy runs your repository's code: Composer scripts, npm `postinstall`, `artisan`, git hooks. The panel starts them with `sudo -u lfy-<site>`, with a clean environment, so they never run as the panel.
+- **The file manager changes files as the website's user.** Writes, uploads, renames, moves, deletes, permissions, zips, and restores go through `sudo`, so every file stays the site's own. Reading needs no help: the panel is in `laravelify-sites`. Files cannot be moved or copied between two websites in one step; download them from one and upload them to the other.
+- **New files keep the group.** Site folders have the setgid bit, so files a site creates belong to `laravelify-sites` and nginx can serve them. Each deploy puts back the owner and group of anything that lost it.
+- **nginx has its own user.** If nginx ran as a site's user, that site's code could talk FastCGI straight to the panel's PHP-FPM pool and run any PHP file as the panel.
+- **The panel does not use Redis.** Redis has no password by default and every site can reach it. The panel keeps its sessions, queue, and cache in its MySQL database. Your sites can keep using Redis.
+- **phpMyAdmin runs in the panel's pool.** Its sessions and config are out of reach of website code.
+- **Node apps run in their website's own PM2 daemon.** `pm2-lfy-<site>` restores it after a reboot. PM2's app files are in `/var/lib/laravelify/pm2`, not in the site folder, because PM2 runs them as code; each is readable only by its own website.
+
+<Warning>
+  Websites still share a few things this does not separate: Redis (no password, so sites can read each other's cache, sessions, and queues), ports on `127.0.0.1` (a site can connect to another site's Node app), and `/tmp` for Supervisor workers and PM2 apps. Give each site its own Redis database and password if that matters to you.
+</Warning>
+
+## The terminal
+
+- In a website (its **Terminal** tab, or a site folder in **Tools → Terminal**), commands run as that website's user, can write only in its folder, and stop after 60 seconds.
+- In `/var/www` itself (**Tools → Terminal** at the top), commands run as `nobody` and cannot write anything or look inside the websites. A user that could read every website would let any website's code read all the others.
+
+## What host-apply.sh checks
+
+`scripts/host-apply.sh` is the only thing the panel can run as root. It accepts a fixed list of actions and validates every argument. It never takes a website's user from the panel: a site has its own user when its folder belongs to `lfy-<site>`, which only root can arrange. It also checks every file it installs:
+
+- Rendered files must come from the panel's own `storage/` (owned by `laravelify`, writable by nobody else).
+- **nginx files** of a site may only log to `/var/log/nginx` or `/var/log/laravelify`, include files under `/etc/nginx`, keep temp and cache folders under nginx's own, and send PHP to the site's own pool. `load_module`, `user`, Lua, Perl, and njs are refused.
+- **Supervisor files** may only hold `[program:<site>-…]` sections. Every program runs as the website's user and logs into `/var/log/laravelify/sites/<site>/`. The panel fills in both when you save, so older configs keep working.
+- **A website's PHP-FPM pool** is written by the script itself from fixed values; nothing in it comes from the panel.
+- **The Cloudflare tunnel unit** is written by the script itself; only the token comes from the panel.
+- Root never writes through a path inside `/var/www`: the site's `.env`, its log folders, and the "turned off" marker are written as the website's user, so a link planted by a site cannot point root at another file.
+
+A refused file leaves the live config as it was, and the panel shows why.
+
+## Files and folders
+
+| Path | Owner | Mode |
+| --- | --- | --- |
+| `/opt/laravelify` | `root:laravelify` | `751` (code `750`/`640`; `public/` and `scripts/` readable for nginx and the websites) |
+| `/opt/laravelify/.env` | `root:laravelify` | `640` |
+| `/opt/laravelify/storage`, `bootstrap/cache` | `laravelify` | `750` |
+| `/var/www` | `root` | `755` |
+| `/var/www/<site>` | `lfy-<site>:laravelify-sites` | `2750`; files inside as your app needs |
+| `/var/lib/laravelify/sites/<site>/home` | `lfy-<site>` | `700`: HOME, Composer and npm caches of deploys, PM2's home |
+| `/var/lib/laravelify/sites/<site>/trash` | `lfy-<site>:laravelify-sites` | `2750`: the file manager's trash for this site |
+| `/var/lib/laravelify/sites/<site>/tmp` | `lfy-<site>` | `700`: PHP uploads and sessions, deploy temp files |
+| `/etc/php/<version>/fpm/pool.d/laravelify-site-<site>.conf` | `root` | The site's PHP-FPM pool |
+| `/var/lib/laravelify/pm2/<site>.config.cjs` | `root:lfy-<site>` | `640`: the site's PM2 app file |
+| `/var/log/laravelify/sites/<site>` | `root:laravelify` | Supervisor worker logs (shown on the **Logs** tab) |
+| `/etc/sudoers.d/laravelify` | `root` | `laravelify` may run `host-apply.sh` as root and commands as `www-data` and the members of `laravelify-tenants`. Websites have no sudo |
+
+Websites not moved to their own user yet keep the older layout: their folder belongs to `www-data`, and they share `/var/lib/laravelify/home` and `/var/lib/laravelify/trash`.
+
+## Running artisan for the panel
+
+Run the panel's artisan as its user:
+
+```bash
+cd /opt/laravelify && sudo -u laravelify php artisan about
+```
+
+## Moving websites to their own users
+
+New websites get their own user from the start. Websites made before the update keep `www-data` until you move them. Move all of them:
+
+```bash
+sudo LARAVELIFY_SITE_USERS=1 bash /opt/laravelify/scripts/privileges.sh
+```
+
+Or one at a time:
+
+```bash
+cd /opt/laravelify && sudo -u laravelify php artisan laravelify:separate-sites --site=shop
+```
+
+For each website, this:
+
+1. Creates `lfy-<site>` and its folders in `/var/lib/laravelify/sites/<site>`.
+2. Gives the site folder to it, and moves the site's items from the shared trash to its own.
+3. Writes the site again: PHP moves to its own pool, workers run as its user, and its Node app moves to its own PM2 daemon.
+4. Checks that the site still answers. A site that answered before and does not answer after goes back to `www-data` straight away, and the command says so.
+
+Each website is down for a few seconds while it moves, and its workers and Node app restart once. The first deploy afterwards is slower: the site's Composer and npm caches start empty. A turned-off site stays off.
+
+## Moving an older server over
+
+Updating from 0.3.0-beta.39 or older gives the panel its own user by itself. The update:
+
+1. Saves the current files to `/var/lib/laravelify/rollback/before-privilege-separation`.
+2. Creates `laravelify`, `laravelify-web`, and the groups `laravelify-sites` and `laravelify-tenants`.
+3. Lets a running deploy finish, then moves the panel to its own PHP-FPM pool, queue worker, and scheduler.
+4. Moves the panel's sessions, queue, and cache from Redis to MySQL. Everyone signs in to the panel again once.
+5. Applies every site's workers again: Supervisor programs as `www-data` with logs in `/var/log/laravelify/sites`, and Node apps from root's PM2 to `www-data`'s.
+
+The panel answers `502` for a few seconds during the switch. Each Laravel worker and Node app restarts once. Websites are not reloaded otherwise. Then move the websites to their own users as above.
+
+If a site's workers could not be applied (for example a custom Supervisor section the checks refuse), it keeps running as before and the update says which. Fix it on the site's **Processes** tab, then run:
+
+```bash
+sudo LARAVELIFY_REAPPLY=1 bash /opt/laravelify/scripts/privileges.sh
+```
+
+`scripts/privileges.sh` is safe to run any time; it puts users, permissions, and services back the way this page describes.
+
+## Rolling back
+
+Give one website back to `www-data`:
+
+```bash
+sudo bash /opt/laravelify/scripts/rollback-site-users.sh --site=shop
+```
+
+Give every website back, and stop giving new ones their own user:
+
+```bash
+sudo bash /opt/laravelify/scripts/rollback-site-users.sh
+```
+
+The website's files and trash go back to `www-data`, its PHP runs in the shared pool of its PHP version, its workers and Node app run as `www-data`, and `lfy-<site>` is deleted. Folders, databases, and settings stay. To turn per-site users on again, delete `/var/lib/laravelify/.no-site-users` and move the websites as above.
+
+If the panel's own user misbehaves:
+
+```bash
+sudo bash /opt/laravelify/scripts/rollback-privileges.sh
+curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_VERSION=0.3.0-beta.39 bash
+```
+
+The first command gives every website back to `www-data`, puts the saved files back, and runs the panel as `www-data` again (which reopens the holes this page closes). The second installs the older release. To separate again later, delete `/var/lib/laravelify/.no-separation` and run `scripts/privileges.sh`.

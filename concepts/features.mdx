@@ -47,7 +47,7 @@ Telegram alerts (each one optional, each can go to its own topic): deploy starte
 | Hide from search engines | `noindex` header and `robots.txt` per site |
 | Block crawlers | 403 for search, SEO, and AI crawlers (link previews still work) |
 | Basic auth | Password-protect a site, with paths that stay open (APIs, webhooks) |
-| Least privilege | The panel runs as `www-data`; only one validated script runs as root |
+| Least privilege | The panel runs as its own user; each website runs as `lfy-<slug>` and cannot read the panel or other sites; only one validated script runs as root ([details](/security/privilege-separation)) |
 
 ## Tools
 

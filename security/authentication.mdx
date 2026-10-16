@@ -59,14 +59,14 @@ For each of them, choose what the box asks for:
 phpMyAdmin is its own app, so Laravelify adds a short block to its nginx file: nginx asks the panel before each phpMyAdmin page. Turning the box off removes the block again.
 
 <Warning>
-  Locked out? On the server run `sudo -u www-data php /opt/laravelify/artisan laravelify:access-off` (add `panel` or `phpmyadmin` to turn off only one).
+  Locked out? On the server run `sudo -u laravelify php /opt/laravelify/artisan laravelify:access-off` (add `panel` or `phpmyadmin` to turn off only one).
 </Warning>
 
 ## Reset two-factor from the server
 
 ```bash
 cd /opt/laravelify
-sudo -u www-data php artisan tinker --execute 'App\Models\User::first()->forceFill(["two_factor_secret" => null, "two_factor_confirmed_at" => null])->save();'
+sudo -u laravelify php artisan tinker --execute 'App\Models\User::first()->forceFill(["two_factor_secret" => null, "two_factor_confirmed_at" => null])->save();'
 ```
 
 The next sign-in asks you to set up two-factor again.

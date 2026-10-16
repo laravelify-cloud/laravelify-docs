@@ -6,7 +6,7 @@ description: "The panel's .env options and where things live on the server."
 Most settings are changed in the panel itself (**Settings**, **Server**). A few panel-level options live in `/opt/laravelify/.env`. After editing it, run:
 
 ```bash
-cd /opt/laravelify && sudo -u www-data php artisan config:clear
+cd /opt/laravelify && sudo -u laravelify php artisan config:clear
 sudo supervisorctl restart laravelify-queue laravelify-scheduler
 ```
 

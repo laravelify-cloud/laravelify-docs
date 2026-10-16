@@ -73,7 +73,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
   </Accordion>
   <Accordion title="Data">
     - **MySQL 8.4 LTS** (Ubuntu's MySQL as a fallback), with the root password you chose.
-    - **Redis**, used by the panel for sessions and queues and available to your sites.
+    - **Redis**, available to your sites. The panel keeps its own sessions, queue, and cache in MySQL.
     - **phpMyAdmin** on its own domain, with one-click sign-in from the panel.
   </Accordion>
   <Accordion title="Node and processes">
@@ -83,7 +83,8 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
   <Accordion title="Network and security">
     - **cloudflared**, connected with your tunnel token.
     - **ufw** firewall: deny incoming by default, allow SSH (22), 80, and 443.
-    - A sudoers rule that lets the panel (`www-data`) run only `scripts/host-apply.sh` as root. That script validates every argument before it touches the system.
+    - The panel's own user, `laravelify`, with its own PHP-FPM pool. Each website runs as `lfy-<slug>` and cannot read the panel or other websites ([Users and permissions](/security/privilege-separation)).
+    - A sudoers rule that lets the panel run only `scripts/host-apply.sh` as root. That script validates every argument and every file before it touches the system.
   </Accordion>
 </AccordionGroup>
 

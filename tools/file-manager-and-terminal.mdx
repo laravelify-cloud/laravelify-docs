@@ -39,7 +39,7 @@ Every website has a **Terminal** tab (it starts in the site folder) and the side
 
 Type `/` for autocomplete of Artisan commands, PM2 commands (`pm2 status`, `pm2 restart`, `pm2 logs`), Supervisor commands, and useful server commands.
 
-Commands run as `www-data` in a sandbox: the rest of the system is read-only, `/tmp` is private, and each command stops after 60 seconds. Use SSH for long or interactive tasks.
+In a website, commands run as that website's user (`lfy-<slug>`, not the panel's) in a sandbox: the rest of the system is read-only, `/tmp` is private, and each command stops after 60 seconds. At `/var/www` itself they run as `nobody` and cannot look inside the websites. Use SSH for long or interactive tasks.
 
 ## phpMyAdmin
 

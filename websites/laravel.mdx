@@ -39,13 +39,13 @@ Add your own on the **Processes** tab, for example:
 [program:myapp-notifications]
 command=php /var/www/myapp/artisan queue:work redis --queue=notifications,default
 directory=/var/www/myapp
-user=www-data
+user=lfy-myapp
 autostart=true
 autorestart=true
-stdout_logfile=/var/www/myapp/storage/logs/notifications.log
+stdout_logfile=/var/log/laravelify/sites/myapp/notifications.log
 ```
 
-Workers run as `www-data`. Their logs show up on the **Logs** tab, and a crashed worker triggers a Telegram alert.
+Workers run as the website's own user (`lfy-<slug>`, or `www-data` if the site has not been moved yet), and their logs go to `/var/log/laravelify/sites/<slug>/` (Supervisor writes them as root, so they stay out of the site folder). Saving fills in that user and moves other log paths there; other users and sections are refused ([why](/security/privilege-separation)). Logs show up on the **Logs** tab, and a crashed worker triggers a Telegram alert.
 
 ## Database
 

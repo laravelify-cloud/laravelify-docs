@@ -12,9 +12,14 @@ The update script:
 1. Downloads the latest release from GitHub (the version change is printed, like `1.0.0 -> 1.1.0`).
 2. Copies it over `/opt/laravelify`, keeping your `.env`, database, `storage/`, and `vendor/`.
 3. Runs `composer install`, clears caches, and runs database migrations.
-4. Restarts the queue worker and the scheduler so they load the new code.
+4. Puts the panel's users and permissions back (`scripts/privileges.sh`).
+5. Restarts the queue worker and the scheduler so they load the new code.
 
 Your websites keep running during the update; only the panel restarts its own workers.
+
+<Note>
+  The first update to 0.3.0-beta.40 or later moves the panel to its own Unix user. Each site's workers and Node apps restart once, and everyone signs in to the panel again. See [Users and permissions](/security/privilege-separation), including how to roll back.
+</Note>
 
 ## Updating with the install command
 

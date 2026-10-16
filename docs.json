@@ -119,7 +119,8 @@
         "group": "Security",
         "pages": [
           "security/authentication",
-          "security/site-security"
+          "security/site-security",
+          "security/privilege-separation"
         ]
       },
       {
