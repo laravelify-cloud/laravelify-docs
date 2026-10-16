@@ -30,7 +30,12 @@ When a column points at another table (a foreign key), its header shows `→ tab
 
 ### The grid
 
-Rows show in a grid (AG Grid Community): resize, move, and pin columns, and the layout is kept per table in your browser. Tick rows to delete them. Paging, sorting (click a header), the search, and filters run in MySQL, so big tables stay fast.
+Rows show in a grid (AG Grid Community) that reads them from the server as you scroll, 100 at a time, sorted and filtered in MySQL, so tables of any size open fast.
+
+- **Funnel** on a header: tick the values to show, from a list of the column's values with how many rows have each (**(Empty)** is NULL), or set a condition (contains, is exactly, starts with, a pattern, empty).
+- **⋮** on a header: sort, pin left or right, fit columns to their content, hide a column, choose the columns to show, reset.
+- Columns have fixed widths (numbers fit 7 digits, text 220px) and can be resized, moved, and pinned; the layout is kept per table in your browser.
+- Hover a cut value to see it whole, click a cell to read or copy it, and double-click a row to open its record. Tick rows to delete them.
 
 ## Encrypted columns
 
