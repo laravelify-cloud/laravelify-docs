@@ -51,6 +51,17 @@ Some websites save columns encrypted, like a passport number saved with `encrypt
 - A table **filter** → **Encrypted with**.
 - A record → **Show decrypted with…** shows every value that decrypts.
 
+### Mark a column encrypted
+
+Tell the panel once which columns are encrypted, and it handles them everywhere. On a column header open **⋮ → Encrypted with… ▸** and pick the method, or pick it in the **Encrypted with** column of the table's **Structure** tab. The column then shows a lock in its header, and:
+
+- The grid shows its values decrypted. **⋮ → Show as stored (encrypted)** shows the stored values again.
+- The header funnel lists the decrypted values and searches them. **Is exactly** and **Is not** encrypt what you type first.
+- The table's search, and the search on the Database page, also look for what you type encrypted with each column's method. You don't pick a method.
+- The record shows the value decrypted, with the stored value below it. **Edit** shows it decrypted and saves a changed value encrypted. An unchanged value stays as stored.
+
+Only the setting is saved. The data in the database is not changed, and the panel never stores a decrypted value. Key columns stay as stored in the grid, because rows are found by their stored keys. Sorting an encrypted column sorts by the stored value.
+
 <Note>
   Searching only finds a value when the method gives the same result for the same text every time (a fixed IV, like an IV taken from the key). Laravel's own `encrypt()` gives a new result each time, so its values can be decrypted but not searched.
 </Note>
