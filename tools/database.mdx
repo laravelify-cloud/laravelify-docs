@@ -28,6 +28,28 @@ Each column gets a field that fits it: date, datetime, and time columns open the
 
 When a column points at another table (a foreign key), its header shows `→ table` and its values are links: one click opens that table showing only the row it points at. When other tables point at a column (usually `id`), its header shows `← N`; click a value to pick one of those tables, like `customers (currency_id)`, and see only the rows that point at it. The record dialog has the same links and a **Related rows** list.
 
+### The grid
+
+Rows show in a grid (AG Grid Community): resize, move, and pin columns, and the layout is kept per table in your browser. Tick rows to delete them. Paging, sorting (click a header), the search, and filters run in MySQL, so big tables stay fast.
+
+## Encrypted columns
+
+Some websites save columns encrypted, like a passport number saved with `encryptString()`. Under **Database → Encryption**, add the website's method:
+
+- **Runs in the website:** a PHP or Laravel website. The code runs in its folder, as its user, with its Laravel app loaded (untick that for plain PHP), so it uses the website's own helpers and keys. The panel never sees them, and the code is stored encrypted.
+- **Encrypt:** the body of `function (string $text)` that returns the encrypted text, like `return encryptString($text);`.
+- **Decrypt** (optional): the same the other way, like `return decryptString($text);`.
+
+**Try a method** encrypts a text and decrypts it again. Then use it:
+
+- **Search** → **Encrypt first with**: what you type is encrypted, and the search looks for that.
+- A table **filter** → **Encrypted with**.
+- A record → **Show decrypted with…** shows every value that decrypts.
+
+<Note>
+  Searching only finds a value when the method gives the same result for the same text every time (a fixed IV, like an IV taken from the key). Laravel's own `encrypt()` gives a new result each time, so its values can be decrypted but not searched.
+</Note>
+
 ## SQL
 
 Run SQL from the **SQL** tab of the Database page (pick the database), of a database, or of a table (it starts with `SELECT * FROM table LIMIT 100`). A selection runs on its own, otherwise the whole box; **Ctrl+Enter** runs. Up to 200 rows come back, and a result can be downloaded as `INSERT` statements. SQL typed here is not in the change log, so it cannot be undone.
