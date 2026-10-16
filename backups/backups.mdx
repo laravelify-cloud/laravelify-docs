@@ -1,9 +1,9 @@
 ---
-title: "Backups to S3"
-description: "Back up databases and folders to your own S3 bucket on a schedule, and restore a whole database, one table, or one folder."
+title: "Backups"
+description: "Back up databases and folders to your own S3 bucket or a folder on the server, on a schedule, and restore a whole database, one table, one website, or one folder."
 ---
 
-Laravelify backs up to **a bucket you own**: Amazon S3, DigitalOcean Spaces, Cloudflare R2, Backblaze B2, Wasabi, or MinIO. Nothing is sent anywhere else, and the access keys are stored encrypted.
+Laravelify backs up to **a bucket you own** (Amazon S3, DigitalOcean Spaces, Cloudflare R2, Backblaze B2, Wasabi, or MinIO) or to **a folder on the server**. Nothing is sent anywhere else, and the access keys are stored encrypted.
 
 Everything lives under **Backups** in the sidebar:
 
@@ -11,15 +11,15 @@ Everything lives under **Backups** in the sidebar:
 | --- | --- |
 | **Databases** | Schedules for MySQL databases, the list of backups, and restores |
 | **Files** | Schedules for folders (with excludes), the list of backups, and restores |
-| **S3 storage** | The buckets backups go to |
+| **Backup storage** | The buckets and server folders backups go to |
 
 <Note>
   Backups use `rclone`, which the installer adds. On a server installed before backups existed, run the update and it is installed for you.
 </Note>
 
-## 1. Add S3 storage
+## 1. Add storage
 
-Open **Backups, S3 storage, Add storage**, choose your provider, and fill in the bucket and the keys. Laravelify writes a small test file and removes it, so you know right away whether the keys work.
+Open **Backups, Backup storage, Add storage**, choose your provider, and fill in the bucket and the keys. Laravelify writes a small test file and removes it, so you know right away whether the keys work.
 
 | Provider | Endpoint | Region |
 | --- | --- | --- |
@@ -31,6 +31,14 @@ Open **Backups, S3 storage, Add storage**, choose your provider, and fill in the
 | MinIO and others | your endpoint | any |
 
 The keys need read, write, and delete access to the bucket. The first storage you add becomes the default.
+
+### No bucket? Use a folder on the server
+
+Choose **This server (a folder)** as the provider and give a full path, like `/backups`. Laravelify makes the folder (owned by the panel's user) and tests it like a bucket. It must be outside `/var/www` and system folders (`/etc`, `/usr`, `/tmp`, `/var/lib`, ...), so a deploy or a website can never touch it.
+
+<Warning>
+  Backups in a server folder are lost together with the server's disk. Use it to get started or next to a bucket, and copy important backups somewhere else.
+</Warning>
 
 ## 2. Back up databases
 
@@ -83,7 +91,9 @@ A running backup shows what it is doing (dumping, packing, uploading) and, while
 
 Adding a website folder by hand skips the same folders for you; remove any you want to keep.
 
-Common skips (`node_modules`, `vendor`, `.git`, `storage/logs`, ...) are one click away. A name is skipped in every folder; a path (`shop/storage/logs`) only there; `*` and `?` work. The folders are packed into one `tar.gz` per run.
+Common skips (`node_modules`, `vendor`, `.git`, `storage/logs`, ...) are one click away. A name is skipped in every folder; a path (`shop/storage/logs`) only there; `*` and `?` work. Each chosen folder (each website) is packed into its own `tar.gz`, so you can look inside, download, or restore one website without the others. **Everything** (the whole `/var/www`) stays one archive.
+
+In the list, each run is one row, like **FULL BACKUP · 6 archives, one per website**, with every website's archive under it.
 
 ## 4. Restore
 
