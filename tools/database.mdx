@@ -20,6 +20,18 @@ Open a table to see its rows a page at a time (25 to 500 per page).
 - A table without a primary or unique key is read-only here, because a row could not be found again safely.
 - **Structure** lists the columns with their types, keys, and defaults.
 
+### Editing a row
+
+Each column gets a field that fits it: date, datetime, and time columns open the browser's date and time picker (with **Now** and **Clear**), enum columns a list of their values, and long text a text box. **NULL** on the right stores no value. Values are saved in MySQL's own format (`2025-02-23 17:59:37`).
+
+### Related rows
+
+When a column points at another table (a foreign key), its header shows `→ table` and its values are links: one click opens that table showing only the row it points at. When other tables point at a column (usually `id`), its header shows `← N`; click a value to pick one of those tables, like `customers (currency_id)`, and see only the rows that point at it. The record dialog has the same links and a **Related rows** list.
+
+## SQL
+
+Run SQL from the **SQL** tab of the Database page (pick the database), of a database, or of a table (it starts with `SELECT * FROM table LIMIT 100`). A selection runs on its own, otherwise the whole box; **Ctrl+Enter** runs. Up to 200 rows come back, and a result can be downloaded as `INSERT` statements. SQL typed here is not in the change log, so it cannot be undone.
+
 ## Triggers, events, procedures, functions
 
 The **Triggers, events, routines** tab lists them. View the definition, **Change** it (if MySQL refuses the new one, the old one is put back), create a **New** one from a `CREATE` statement, or drop it.
