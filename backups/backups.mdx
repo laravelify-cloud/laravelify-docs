@@ -70,6 +70,14 @@ Tick schedules to run, pause, resume, or delete several at once, and tick backup
 
 A running backup shows what it is doing (dumping, packing, uploading) and, while it uploads to your bucket, a progress bar with the percent.
 
+### Skip tables
+
+Some tables are not worth backing up: cache, sessions, logs, queues, or data that never changes. On a database schedule, **Skip tables** lists your databases: open one and untick its tables. `*.table` (like `*.sessions`) skips a table in every database. Skipped tables are left out of the dump completely (`mysqldump --ignore-table`) and named in the run's log. A restore does not touch them in the target database.
+
+**Full backup** asks the same before it starts: every database with its tables, untick what you do not need, then **Back up**. Each database is dumped to its own file, and your choice is kept for the next full backup.
+
+In the list, each schedule is one row, like **FULL BACKUP · 3 dumps, one per database · 2 runs**, with the newest run's dump of every database under it.
+
 ## 3. Back up folders
 
 **Backups, Files, New schedule.** The picker works like the file manager: browse `/var/www`, tick folders and files, and press **Add to backup** or **Skip**. Each row shows whether it is **Included** or **Skipped**, so you can open a site, tick `node_modules` and `.git`, and skip them in one go.
