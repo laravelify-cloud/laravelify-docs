@@ -20,6 +20,51 @@ The installer asks for:
 | phpMyAdmin domain | `db.example.com` | phpMyAdmin's address |
 | Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare |
 
+It always installs the **latest release**: the command downloads the installer of the newest GitHub release, and that installer downloads the matching panel.
+
+### What you see
+
+The installer works through the install one step at a time. Each step shows a spinner while it runs and a check mark with its time when it is done, so you always know where it is. What the commands print goes to `/var/log/laravelify-install.log` (readable only by root). When a step fails, it stops there and shows the last lines of that log.
+
+```text
+┌  Laravelify installer · self-hosted deployment panel
+│
+◇  Settings
+│  Server               Ubuntu 24.04.3 LTS
+│  Panel                https://panel.example.com
+│  phpMyAdmin           https://db.example.com
+│  PHP-FPM              8.3 8.4
+│  Node.js              22 24 (system: 24)
+│  Log                  /var/log/laravelify-install.log
+│
+◆  Downloaded Laravelify 0.3.0-beta.51 4s
+◆  Installing nginx, Redis, Supervisor, Git, and tools 38s
+◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
+◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
+◆  Installing MySQL 8.4 1m 12s
+◒  Installing phpMyAdmin 9s
+```
+
+## Choose what to install
+
+By default the installer adds every PHP-FPM version from 8.0 to 8.5 and Node.js 20, 22, and 24. To install only what your sites use (it is faster and uses less disk), use the **install command builder** on [laravelify.cloud](https://laravelify.cloud/#install). Tick the versions, optionally type your domains, and copy the command. Or write the options yourself:
+
+```bash
+curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo bash -s -- --php=8.3,8.4 --node=22,24
+```
+
+| Option | Example | Description |
+| --- | --- | --- |
+| `--php=LIST` | `--php=8.2,8.4` | PHP-FPM versions, from 8.0 to 8.5. The panel itself needs 8.3 or newer, so 8.4 is added when none of 8.3, 8.4, 8.5 is chosen. |
+| `--node=LIST` | `--node=22,24` | Node.js majors: 20, 22, 24. The newest one is the system Node.js (npm, PM2, and sites set to a version that is not installed). |
+| `--panel-domain=HOST` | `--panel-domain=panel.example.com` | The panel's domain (otherwise asked) |
+| `--phpmyadmin-domain=HOST` | `--phpmyadmin-domain=db.example.com` | phpMyAdmin's domain (otherwise asked) |
+| `--help` | | Prints the options |
+
+The MySQL root password and the Cloudflare tunnel token have no option on purpose: they are always asked on the server (or given as environment variables, below), so they never end up in a copied command or your shell history.
+
+To add a version later, run a repair with the new list, like `curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_REINSTALL=1 bash -s -- --php=8.2,8.3,8.4`. It installs only what is missing.
+
 When it finishes it prints the setup link, like `https://panel.example.com/setup?token=...`. Open it to create the admin account and turn on two-factor authentication. Without the token `/setup` does not open, so nobody who finds a fresh panel first can claim it (the token is also in `/opt/laravelify/.env` as `LARAVELIFY_SETUP_TOKEN`).
 
 ## Running it again
@@ -58,9 +103,11 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | `PANEL_DOMAIN` | asked | Panel hostname |
 | `PHPMYADMIN_DOMAIN` | asked | phpMyAdmin hostname (different from the panel) |
 | `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
+| `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
+| `LARAVELIFY_NODE_VERSIONS` | `20 22 24` | Same as `--node` |
 | `LARAVELIFY_VERSION` | `latest` | Release to install, like `1.2.0` |
 | `LARAVELIFY_REPO` | the official repository | GitHub `owner/name` to download releases from (for forks) |
-| `LARAVELIFY_SOURCE` | — | Install from a local folder instead (development) |
+| `LARAVELIFY_SOURCE` | — | Install from a local folder instead (development). Its `.env`, `storage`, and caches are never copied, so the server keeps its own keys. |
 | `LARAVELIFY_ARCHIVE_URL` | — | Install from any `.tar.gz` URL instead |
 
 ## What gets installed
@@ -68,7 +115,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 <AccordionGroup>
   <Accordion title="Web and PHP">
     - **nginx**, the web server for every site, the panel, and phpMyAdmin.
-    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5** (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
+    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5**, or the ones you chose with `--php` (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
     - **Composer**.
   </Accordion>
   <Accordion title="Data">
@@ -77,7 +124,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
     - **phpMyAdmin** on its own domain, with one-click sign-in from the panel.
   </Accordion>
   <Accordion title="Node and processes">
-    - **Node.js 20, 22, and 24** (through `n`) and **PM2** for Next.js sites.
+    - **Node.js 20, 22, and 24**, or the ones you chose with `--node` (through `n`), and **PM2** for Node.js, Next.js, and Nuxt sites.
     - **Supervisor**, which runs the panel's `laravelify-queue` (deploys) and `laravelify-scheduler` (monitoring, alerts), plus each Laravel site's workers.
   </Accordion>
   <Accordion title="Network and security">
