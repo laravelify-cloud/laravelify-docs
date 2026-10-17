@@ -68,7 +68,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 <AccordionGroup>
   <Accordion title="Web and PHP">
     - **nginx**, the web server for every site, the panel, and phpMyAdmin.
-    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5** (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs.
+    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5** (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
     - **Composer**.
   </Accordion>
   <Accordion title="Data">
