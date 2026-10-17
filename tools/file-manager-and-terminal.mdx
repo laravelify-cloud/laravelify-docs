@@ -39,7 +39,23 @@ Every website has a **Terminal** tab (it starts in the site folder) and the side
 
 Type `/` for autocomplete of Artisan commands, PM2 commands (`pm2 status`, `pm2 restart`, `pm2 logs`), Supervisor commands, and useful server commands.
 
-In a website, commands run as that website's user (`lfy-<slug>`, not the panel's) in a sandbox: the rest of the system is read-only, `/tmp` is private, and each command stops after 60 seconds. At `/var/www` itself they run as `nobody` and cannot look inside the websites. Use SSH for long or interactive tasks.
+In a website, commands run as that website's user (`lfy-<slug>`, not the panel's) in a sandbox: the rest of the system is read-only, `/tmp` is private, and each command stops after 15 minutes. At `/var/www` itself they run as `nobody` and cannot look inside the websites.
+
+### A live console you can type in
+
+The output is a real console ([xterm.js](https://xtermjs.org)). It shows the output as it happens, with colours, and a command that asks a question waits for you: click in the window and type the answer (`y`, `yes`, a number), then press <kbd>Enter</kbd>. <kbd>Ctrl</kbd>+<kbd>C</kbd> stops a command, and so does **Stop** in the toolbar. **Copy** and **Clear** work on what is on screen.
+
+Each command is one run in the sandbox, not a login shell: `cd` and variables do not carry over to the next command, so chain them (`cd app && npm test`). For a shell session you stay in, use SSH.
+
+<Note>
+  `pm2` and `supervisorctl` commands are answered by the panel itself and print their result at once.
+</Note>
+
+## Deployments
+
+The sidebar's **Deployments** page shows every website as a card with the state of its latest deployment (waiting, in progress, finished, or failed), its commit, who triggered it, and how long it took. Search by name or filter by state. **Deploy** starts a deployment, and **View log** or **Watch live** opens the website's Deployments tab. The page refreshes by itself.
+
+A deployment's log is the same live console, read-only: it follows the build while it runs, keeps the colours (commands, warnings, errors), scrolls on its own, and does not jump when the page refreshes.
 
 ## phpMyAdmin
 
