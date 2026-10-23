@@ -126,6 +126,7 @@
       {
         "group": "Tools",
         "pages": [
+          "tools/vs-code",
           "tools/mcp",
           "tools/file-manager-and-terminal",
           "tools/database",

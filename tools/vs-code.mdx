@@ -1,0 +1,55 @@
+---
+title: "VS Code, AI agents, and Live Server"
+description: "Edit a website in a full VS Code, chat with Claude, Cursor, or Copilot about it, and share its dev server on a random address."
+---
+
+Every website that deploys from a GitHub repository or an [example project](/websites/example-projects) has a **Code editor** button at the top of its page. It opens a full VS Code ([code-server](https://github.com/coder/code-server), MIT) in a new tab.
+
+## VS Code
+
+- It runs as the website's own user (`lfy-<slug>`), in the same sandbox as its terminal, so it reaches that site's files and nothing else.
+- It works on its own copy of the repository (a workspace in the site user's home), not the deployed folder: a build never sees half-edited files.
+- Extensions, the terminal, Git, Source Control, and the debugger work as in desktop VS Code. The theme starts dark; your own choices are kept.
+- **Commit and push to deploy.** A GitHub site deploys through its webhook. An example project deploys through a push hook on its local repository.
+- Only a signed-in panel user (with two-factor confirmed) can open it: nginx asks the panel before every request.
+- It stops by itself after 30 minutes without use and frees its memory. Opening it again takes a few seconds; an editor that is still running opens at once.
+
+<Note>
+  VS Code needs the website to run as its own user. A site that does not yet can be moved under **Security → own user**.
+  code-server is installed with the panel (install and update), so the first open does not download anything.
+</Note>
+
+## AI Agents chat
+
+The **AI Agents** icon in VS Code's side bar opens a chat with **Claude Code**, **Cursor Agent**, or **GitHub Copilot CLI** about the project. The three command-line tools install themselves for the website's user when the editor opens.
+
+- **Sign in** from a dialog with the link and code, each with a copy button. Sign-ins stay with the website's user on the server.
+- **Switch agents in the middle of a task.** When one reaches its usage limit, pick another: it gets a short recap of the conversation (or the full handoff, when the last one stopped before finishing) and carries on.
+- **Project map.** [graphify](https://github.com/Graphify-Labs/graphify) keeps a map of the project's modules and how they connect, updated after every change. Agents read it instead of exploring every folder, which saves tokens.
+- **Models and effort.** Models are grouped by agent; Cursor shows its main models first and finds the rest with the filter. Claude and Copilot have effort levels.
+- **The "/" menu:** attach or mention a file, clear, rewind, bookmarks, export as Markdown, switch model, effort, account and usage.
+- **Restore checkpoint** on any of your messages puts the project's files back to how they were before it.
+- **Selected code:** <kbd>Ctrl</kbd>+<kbd>L</kbd> adds it to the chat, <kbd>Ctrl</kbd>+<kbd>I</kbd> asks for an edit of just those lines (also above the selection and in the right-click menu).
+- **Long pastes** become cards you can view and edit before sending; **pasted images** become `[Image #1]`, which you can refer to in the message.
+- <kbd>↑</kbd> and <kbd>↓</kbd> go through the messages you sent.
+
+## Live Server
+
+**Go Live** in VS Code's status bar runs the project's dev server and shows it on a random name of your Cloudflare zone (like `calm-river-4f2a.example.com`), inside VS Code and in any browser.
+
+| Project | What runs |
+| --- | --- |
+| Next.js | `next dev` |
+| Vite, Nuxt, Astro, SvelteKit | the `dev` script with the port and host |
+| Other Node.js | the `dev` (or `start`) script, with `PORT` |
+| Laravel | `php artisan serve` |
+| Plain PHP and static sites | PHP's own server (`php -S`) |
+
+- Missing `node_modules` or `vendor` are installed first.
+- **Saving a file refreshes the page:** by the framework's hot reload (Next.js, Vite...), by a small reload script for PHP and static pages (every open browser refreshes), or by reloading VS Code's preview.
+- Click the status bar item to open the site in VS Code or the browser, copy the link, see the dev server's terminal, or **stop** it. Stopping (or closing VS Code) removes the name, its tunnel route, and its DNS record.
+- Only that website's editor can ask for an address, only for a port in the Live Server range (14000–14999), and only when the website's own user is the one listening on it.
+
+<Note>
+  The Live Server needs a Cloudflare API token (**Settings → Cloudflare**) and a tunnel. The address is public while it runs: anyone with the link can open the dev site.
+</Note>

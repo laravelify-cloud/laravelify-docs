@@ -49,6 +49,15 @@ Telegram alerts (each one optional, each can go to its own topic): deploy starte
 | Basic auth | Password-protect a site, with paths that stay open (APIs, webhooks) |
 | Least privilege | The panel runs as its own user; each website runs as `lfy-<slug>` and cannot read the panel or other sites; only one validated script runs as root ([details](/security/privilege-separation)) |
 
+## Code
+
+| Feature | Details |
+| --- | --- |
+| VS Code | A full VS Code (code-server) per website in the browser, as its own user; extensions, terminal, Git, debugger; commit and push to deploy ([details](/tools/vs-code)) |
+| AI agents | Claude Code, Cursor Agent, and GitHub Copilot CLI in a chat; switch agents mid-task and the next one continues; project map from graphify; restore checkpoints |
+| Live Server | Runs the dev server (Next.js, Vite, Node, Laravel, PHP) on a random HTTPS address through the tunnel; refreshes on save; removed on stop |
+| Environments and previews | Production and development per website, each with its own branch, domain, database, and Redis prefix; previews on a random subdomain |
+
 ## Tools
 
 File manager (browse, edit, upload, download any file), terminal with autocomplete for Artisan, PM2, and Supervisor commands, phpMyAdmin one-click sign-in, sidebar links, timezone and date format settings.
