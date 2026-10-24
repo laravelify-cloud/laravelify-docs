@@ -23,7 +23,7 @@ Every website that deploys from a GitHub repository or an [example project](/web
 
 The **AI Agents** icon in VS Code's side bar opens a chat with **Claude Code**, **Cursor Agent**, or **GitHub Copilot CLI** about the project. The three command-line tools install themselves for the website's user when the editor opens.
 
-- **Sign in** from a dialog with the link and code, each with a copy button. Sign-ins stay with the website's user on the server.
+- **Sign in once** from a dialog with the link and code, each with a copy button. The sign-in is shared with every website's editor and workspace on the server, and signing out signs out everywhere.
 - **Switch agents in the middle of a task.** When one reaches its usage limit, pick another: it gets a short recap of the conversation (or the full handoff, when the last one stopped before finishing) and carries on.
 - **Project map.** [graphify](https://github.com/Graphify-Labs/graphify) keeps a map of the project's modules and how they connect, updated after every change. Agents read it instead of exploring every folder, which saves tokens.
 - **Models and effort.** Models are grouped by agent; Cursor shows its main models first and finds the rest with the filter. Claude and Copilot have effort levels.
@@ -46,10 +46,36 @@ The **AI Agents** icon in VS Code's side bar opens a chat with **Claude Code**, 
 | Plain PHP and static sites | PHP's own server (`php -S`) |
 
 - Missing `node_modules` or `vendor` are installed first.
+- **Other projects** (made with the AI chat, Python, Go...): Go Live offers **Ask the AI**. The chat works out the command and saves it in `.laravelify/live.json` (`{"label": "Flask", "command": "flask run --host 127.0.0.1 --port {port}"}`), and the Live Server starts as soon as it is saved. That file always wins, so you can edit it too.
 - **Saving a file refreshes the page:** by the framework's hot reload (Next.js, Vite...), by a small reload script for PHP and static pages (every open browser refreshes), or by reloading VS Code's preview.
-- Click the status bar item to open the site in VS Code or the browser, copy the link, see the dev server's terminal, or **stop** it. Stopping (or closing VS Code) removes the name, its tunnel route, and its DNS record.
+- **Each website keeps its address**, so every Go Live has the same link. Click the status bar item to open the site in VS Code or the browser, copy the link, see the dev server's terminal, or **stop** it. Stopping keeps the name and its DNS record for next time; **Release** on the panel's **Domains** page removes them.
 - Only that website's editor can ask for an address, only for a port in the Live Server range (14000–14999), and only when the website's own user is the one listening on it.
 
 <Note>
   The Live Server needs a Cloudflare API token (**Settings → Cloudflare**) and a tunnel. The address is public while it runs: anyone with the link can open the dev site.
 </Note>
+
+## Workspaces
+
+**Workspaces** in the panel's side bar lists the projects you open in VS Code: opening a website's Code editor adds it.
+
+- **Create workspace** and pick one project, or several to open together in **one VS Code**. It is named after its projects unless you type a name.
+- A workspace of several projects runs as its own user (`lfy-ws--<key>`). It can read and change exactly those projects' folders, nothing else of the websites (their sign-ins, caches, and keys stay closed), and pushes each project with its own GitHub token.
+- **Zip** downloads the projects' code, without `node_modules`, `vendor`, builds, and `.env` files.
+- **Share** makes a link that opens the workspace's VS Code for anyone who has it, **without a panel account**. They can change, commit, and push, so share it only with people you trust. **Turn off link** stops it at once; **New link** replaces it.
+- **Delete** removes the workspace, its editor, and its access. The projects stay as they are.
+
+<Note>
+  The Live Server runs in a website's own editor; a workspace of several projects does not offer it yet.
+</Note>
+
+## On phones and tablets
+
+VS Code adapts to touch screens; computers keep the normal layout.
+
+- Everything is drawn larger, with finger-size rows and buttons.
+- Menus (☰, ⚙, accounts, long-press on a file) are full-screen drawers with a Close row; a submenu opens as the next step with a Back row.
+- Search, Source Control, Run, and Extensions open full screen with ✕; the Explorer stays beside the icon bar, and opening a file closes it.
+- The bottom panel shows which one is open (**Problems ▾**, **Terminal ▾**); tap it to switch.
+- The AI Agents chat opens full screen, with ✕ in its header.
+- The title bar has a reload button, and the status bar keeps **Go Live** in view.
