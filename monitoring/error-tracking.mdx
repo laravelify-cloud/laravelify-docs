@@ -30,7 +30,7 @@ The **GlitchTip** tab shows what is done and what is left: GlitchTip installed, 
 
 <Steps>
   <Step title="Install SDK in the code">
-    Click **Install SDK in the code**. Laravelify adds the Sentry package and its setup to the website's code (the same steps the tab shows), commits, pushes to the website's branch, and deploys. It works for repositories the panel can push to: example projects, and GitHub repositories with a connected GitHub App or token.
+    Click **Install SDK in the code**. Laravelify adds the Sentry package and its setup to the website's code (the same steps the tab shows), commits, pushes to the website's branch, and deploys. It works for repositories the panel can push to: example projects, and GitHub repositories with a connected GitHub App that may write (Contents: read and write) or a saved token. Deploys only read, so the website's own App may be read-only: the button then uses another connected App that may write to the repository.
   </Step>
   <Step title="Or do it by hand">
     Follow the steps in the tab for your framework, commit, and deploy.
