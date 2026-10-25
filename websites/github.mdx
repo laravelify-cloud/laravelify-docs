@@ -13,7 +13,7 @@ description: "Connect repositories and deploy on every push."
     - Uses a short-lived token per deploy; nothing long-lived is stored in the site.
     - Auto deploy is on as soon as the site uses the App: every push to the site's branch deploys it. No webhook to add per repository. The **Deployments** tab shows **Automatic**.
     - If pushes do not arrive, check that the App is installed on that repository (GitHub → **Settings → Applications → your App → Repository access**).
-    - The organization field suggests your organizations (those of your other Apps and of a saved GitHub token); leave it empty for your personal account.
+    - Pick the account the App is made in: **Personal account** or one of your organizations (those of your other Apps, and all of yours once a GitHub token is saved in **Settings → GitHub**). An App can only be installed in the account it is made in.
     - The App asks for **Contents: read and write**: deploys only read, and writing lets the panel commit for you (the Sentry SDK) and make new repositories.
     - **Re-register** (on the Sources list) makes a new App on GitHub for a source, with the current permissions, and its websites keep using it. Delete the old App on GitHub afterwards. **Delete** removes a source from the panel; its websites stop deploying on push until they use another source.
   </Tab>
