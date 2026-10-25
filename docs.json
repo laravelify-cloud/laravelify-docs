@@ -112,6 +112,7 @@
           "monitoring/overview",
           "monitoring/server",
           "monitoring/heartbeats",
+          "monitoring/error-tracking",
           "monitoring/telegram"
         ]
       },

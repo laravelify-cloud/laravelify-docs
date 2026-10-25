@@ -72,7 +72,7 @@ Turning a group or several websites on or off runs in the queue, like backups. A
 
 The **Groups** list and a group's websites have a checkbox on every row and one to select all. With rows selected, a bar shows **Turn on**, **Turn off**, and **Delete**:
 
-- Deleting websites removes their nginx, worker, and PM2 files and the websites in the panel. Their folders in `/var/www` are kept.
+- Deleting websites removes their nginx, worker, and PM2 files and the websites in the panel. Their folders move to `/var/www/.trash/<name>-<date>`, so they can still be brought back.
 - Only empty groups are deleted. Groups that still have websites are kept, and the panel tells you which.
 - Both ask you to type `delete` first (a copy button pastes it).
 

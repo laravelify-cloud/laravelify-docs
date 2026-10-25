@@ -1,0 +1,58 @@
+---
+title: "Error tracking"
+description: "Server and browser errors from every website, with GlitchTip on your own server."
+---
+
+Laravelify can install [GlitchTip](https://glitchtip.com) (open source, Sentry compatible) on your server. Your websites send their errors to it with a Sentry SDK: errors on the server (Laravel, PHP, Node, Express, NestJS, and the server side of Nuxt, Next.js and SvelteKit) and errors in visitors' browsers. Nothing is sent to anyone else.
+
+## Turn it on
+
+Website → **GlitchTip** → **Turn on error tracking**. It takes a minute or two and uses about 250 MB of RAM. GlitchTip then runs at `https://your-panel/glitchtip`.
+
+Every website gets its own GlitchTip project, and its key (DSN) goes into the website's `.env` under the name its SDK reads:
+
+| Site type | Keys in `.env` |
+| --- | --- |
+| Laravel | `SENTRY_LARAVEL_DSN`, `VITE_SENTRY_DSN` |
+| Next.js | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` |
+| Nuxt | `SENTRY_DSN`, `NUXT_PUBLIC_SENTRY_DSN` |
+| SvelteKit | `SENTRY_DSN`, `PUBLIC_SENTRY_DSN` |
+| React, Vue, Svelte | `VITE_SENTRY_DSN` |
+| Astro | `PUBLIC_SENTRY_DSN` |
+| Node, Express, NestJS, PHP | `SENTRY_DSN` |
+| Angular, plain HTML | none: the key goes in the code |
+
+New websites are connected by themselves. Deleting a website deletes its project.
+
+## Add the SDK
+
+The **GlitchTip** tab shows what is done and what is left: GlitchTip installed, website connected, key in `.env` (or in the code), Sentry SDK in the code, errors received.
+
+<Steps>
+  <Step title="Install SDK in the code">
+    Click **Install SDK in the code**. Laravelify adds the Sentry package and its setup to the website's code (the same steps the tab shows), commits, pushes to the website's branch, and deploys. It works for repositories the panel can push to: example projects, and GitHub repositories with a connected GitHub App or token.
+  </Step>
+  <Step title="Or do it by hand">
+    Follow the steps in the tab for your framework, commit, and deploy.
+  </Step>
+</Steps>
+
+<Note>
+When a file does not look as expected (a Nuxt config that already has `runtimeConfig`, for example), the button stops and says what to add by hand. Projects that use pnpm or Yarn add the package themselves.
+</Note>
+
+## Open GlitchTip
+
+**Open in GlitchTip** signs you in by itself. Any GlitchTip page opened without a session goes through the panel's sign-in first, so GlitchTip sits behind the panel's login. The organization, admin user, password, MFA and API token are managed by the panel: their menus are hidden and changing them is refused.
+
+The **Performance**, **Logs** and **Releases** pages fill when an app sends more than errors:
+
+- **Performance**: add `tracesSampleRate: 0.1` to `Sentry.init` (browser apps also `Sentry.browserTracingIntegration()`); Laravel: `SENTRY_TRACES_SAMPLE_RATE=0.1`.
+- **Logs**: add `enableLogs: true` to `Sentry.init`, then `Sentry.logger.info('…')`.
+- **Releases**: set `release` in `Sentry.init`, or `SENTRY_RELEASE` in the Environment tab (Node and Laravel read it).
+
+## Turn it off
+
+GlitchTip tab → **Turn off error tracking** (type `glitchtip` to confirm). GlitchTip and its database are removed, and each website's key leaves its `.env` (from its next deploy). The SDK stays in the code and sends nothing without a key. PostgreSQL stays installed.
+
+Turning it on again starts empty and reconnects every website. For Angular, plain HTML and PHP sites, which hold the key in their code, the tab shows **Key in the code** in red: click **Install SDK in the code** to put the new key in.
