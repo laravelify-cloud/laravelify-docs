@@ -49,7 +49,7 @@ Workers run as the website's own user (`lfy-<slug>`, or `www-data` if the site h
 
 ## Database
 
-Tick **Create a MySQL database** when creating the site, or use **Provision database** on the General tab. Laravelify creates the database and a user with a random password and fills `DB_*` in `.env`. The password is encrypted in the panel; click the eye icon (with your 2FA code) to see it, or open phpMyAdmin with one click from the sidebar.
+Tick **Create a database** when creating the site and pick its engine (MySQL or MariaDB, PostgreSQL, MongoDB, or SQLite, whichever the server has), or use **Create …** in the Database card on the General tab. Laravelify creates the database and a user with a random password and fills `DB_*` in `.env` (`DB_CONNECTION=pgsql` for PostgreSQL, `sqlite` with a file in `.data/` for SQLite, and `MONGODB_URI` for MongoDB with the `mongodb/laravel-mongodb` package). The password is encrypted in the panel; click the eye icon (with your 2FA code) to see it, or open phpMyAdmin with one click from the sidebar.
 
 <Tip>
   The site's commands never see the panel's own environment. A site always uses its own `.env`, even when the panel runs the command.

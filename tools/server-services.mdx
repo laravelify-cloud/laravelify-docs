@@ -9,10 +9,16 @@ description: "MySQL, Redis, phpMyAdmin, PHP-FPM, ports, and processes."
 | --- | --- |
 | MySQL 8.4 LTS | `/etc/mysql/mysql.conf.d/laravelify.cnf`, then restarts MySQL |
 | Redis | `/etc/redis/laravelify.conf` (included from `redis.conf`), then restarts Redis. Set a password here |
-| phpMyAdmin | Its nginx file, then reloads nginx |
+| phpMyAdmin | Its nginx locations (or its own nginx file), then reloads nginx |
 | PHP-FPM 8.0–8.5 | `/etc/php/{version}/fpm/pool.d/www.conf`, then restarts that PHP-FPM |
 
 Sites use the PHP socket `unix:/run/php/php{version}-fpm.sock` of their version.
+
+## phpMyAdmin
+
+New servers serve phpMyAdmin at a path of the panel's address, like `https://panel.example.com/phpmyadmin`, not on a domain of its own. Change the path on **Server → phpMyAdmin**; saving writes the nginx locations again (one-click sign-in included) and puts the old ones back if nginx refuses the new ones. Servers installed with a phpMyAdmin domain keep it.
+
+Passwords on these pages (the MySQL root password, the Redis password) are shown only after your authenticator code.
 
 ## Ports and processes
 

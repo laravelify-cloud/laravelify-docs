@@ -9,7 +9,9 @@ description: "Remove Laravelify from a server, completely or only the panel."
 sudo bash /opt/laravelify/scripts/uninstall.sh
 ```
 
-You are asked to type `uninstall` to confirm. The script stops and removes the panel, **every Laravelify site under `/var/www`**, their nginx files, workers and PM2 apps, the Cloudflare tunnels, and the packages the installer added (nginx, MySQL, Redis, PHP-FPM, Node.js, PM2, cloudflared). SSH stays open.
+You are asked to type `uninstall` to confirm. The script stops and removes the panel, **every Laravelify site under `/var/www`**, their nginx files, workers and PM2 apps, the Cloudflare tunnels, and the packages the installer added (nginx, MySQL or MariaDB, PostgreSQL, MongoDB, Redis, every PHP-FPM version, Node.js, PM2, phpMyAdmin, cloudflared). Their data goes too (`/var/lib/mysql`, `/var/lib/postgresql`, `/var/lib/mongodb`), and so do the Python, Go, Bun, and Hugo versions sites downloaded (`/opt/laravelify-tools`). Only packages that are installed are removed, so a missing one never stops the rest. SSH stays open.
+
+To run it without the question (from a script), set `LARAVELIFY_UNINSTALL_ASSUME_YES=1`.
 
 <Warning>
   This deletes your sites and databases. Back up `/var/www` and your MySQL databases first (`mysqldump --all-databases`).

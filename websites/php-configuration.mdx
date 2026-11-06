@@ -1,0 +1,39 @@
+---
+title: "PHP configuration"
+description: "Pick a website's PHP version, turn extensions on or off, and set its own PHP options."
+---
+
+Every PHP and Laravel website has a **PHP** tab (under **Settings**) with three parts.
+
+## PHP version
+
+Choose 7.4, or 8.0 to 8.5, and click **Update**. A version the server does not have yet is installed in the background (one to three minutes) from the PHP package repository, with the extensions websites use most; the website moves to it when it is ready. Requests that are running finish on the old version.
+
+<Note>
+  Check that your code and packages support the version you pick. Laravel 11 and newer need PHP 8.2 or higher.
+</Note>
+
+## PHP extensions
+
+Switches for the extensions people use most: `bcmath`, `curl`, `gd`, `imagick`, `intl`, `mbstring`, `mysqli`, `pdo_mysql`, `pdo_pgsql`, `pdo_sqlite`, `mongodb`, `redis`, `memcached`, `opcache`, `soap`, `xml`, `zip`, `exif`, `gmp`, `ldap`, `imap`, and `xdebug`. Turning on one that is not installed installs its package first.
+
+<Warning>
+  PHP loads extensions per version, not per website: a switch changes it for **every website on that PHP version**. Never leave `xdebug` on for a live site: it makes every request slow.
+</Warning>
+
+## PHP options
+
+These go into the website's own PHP-FPM pool, so they apply to this website only and its code cannot change them back. Leave a field empty to keep PHP's default.
+
+| Option | Default | Example | What it does |
+| --- | --- | --- | --- |
+| `memory_limit` | `128M` | `512M` | Most memory one request may use (`-1` is no limit) |
+| `upload_max_filesize` | `2M` | `64M` | Biggest single uploaded file |
+| `post_max_size` | `8M` | `64M` | A whole form, files included; keep it at least the upload size |
+| `max_execution_time` | `30` | `120` | Seconds a request may run (`0` is no limit) |
+| `max_input_time` | `60` | `120` | Seconds to read a request's data, like a slow upload |
+| `max_input_vars` | `1000` | `5000` | Form fields one request may send |
+| `date.timezone` | `UTC` | `Asia/Baku` | The time zone |
+| `display_errors` | `off` | `off` | Show errors in pages; only while debugging |
+
+Values are checked twice, by the panel and by the root script that writes the pool, so only these options and plain values are ever written.

@@ -1,6 +1,6 @@
 ---
 title: "Frameworks"
-description: "Deploy backends, frontends, and full-stack apps: PHP, Node.js, React, Vue, Angular, and more."
+description: "Deploy backends, frontends, and full-stack apps: PHP, Python, Go, Java, C#, Bun, Node.js, React, Vue, Hugo, and more."
 ---
 
 Pick what you are deploying when you add a website. Laravelify groups the choices into **Backend**, **Frontend**, and **Full-stack**, and each one runs the way that suits it:
@@ -8,8 +8,8 @@ Pick what you are deploying when you add a website. Laravelify groups the choice
 | Runs as | How | Used by |
 | --- | --- | --- |
 | **PHP-FPM** | nginx → PHP-FPM, with Supervisor workers for Laravel | Laravel, PHP |
-| **PM2** | nginx → a Node server kept running by PM2 | Express, NestJS, Node.js, Next.js, Nuxt, SvelteKit |
-| **nginx** | the app is built once, nginx serves the files | React, Vue.js, Angular, Svelte, Astro, Static HTML |
+| **PM2** | nginx → a server kept running by PM2 | Express, NestJS, Node.js, Next.js, Nuxt, SvelteKit, Django, Flask, FastAPI, Go, Spring Boot, ASP.NET Core, Bun |
+| **nginx** | the app is built once, nginx serves the files | React, Vue.js, Angular, Svelte, Astro, Hugo, Gatsby, Docusaurus, VitePress, Eleventy, Static HTML |
 
 ## What you can deploy
 
@@ -28,6 +28,29 @@ Pick what you are deploying when you add a website. Laravelify groups the choice
     | **Express** | JavaScript / TypeScript | REST APIs, webhooks, and small services |
     | **NestJS** | TypeScript | Large, structured APIs and enterprise back ends |
     | **Node.js** | JavaScript / TypeScript | Anything that listens on a port: Fastify, Hono, Koa, bots |
+    | **Bun** | JavaScript / TypeScript | Fast APIs and TypeScript servers without a build step (Hono, Elysia) |
+  </Tab>
+  <Tab title="Python">
+    | | Served by | Best for |
+    | --- | --- | --- |
+    | **Django** | Gunicorn | Content sites, SaaS backends, and admin-heavy apps |
+    | **Flask** | Gunicorn | APIs, dashboards, and small services |
+    | **FastAPI** | Uvicorn | REST APIs, AI and ML services |
+  </Tab>
+  <Tab title="Go">
+    | | Language | Best for |
+    | --- | --- | --- |
+    | **Go** | Go | High-traffic APIs and microservices: Gin, Echo, Fiber, Chi, or `net/http` |
+  </Tab>
+  <Tab title="Java">
+    | | Built with | Best for |
+    | --- | --- | --- |
+    | **Spring Boot** | Maven or Gradle, on Temurin Java 17, 21, or 25 | Enterprise APIs, banking, and large business apps |
+  </Tab>
+  <Tab title="C# / .NET">
+    | | Runs on | Best for |
+    | --- | --- | --- |
+    | **ASP.NET Core** | .NET 8, 9, or 10 | Business apps and APIs: minimal APIs, MVC, Razor, Blazor Server |
   </Tab>
 </Tabs>
 
@@ -41,6 +64,11 @@ Pick what you are deploying when you add a website. Laravelify groups the choice
 | **Svelte** | TypeScript / JavaScript | High-performance apps that must load fast on slow devices |
 | **Astro** | Any framework | Content sites, blogs, portfolios, and marketing pages |
 | **Static HTML** | HTML / CSS / JS | Landing pages and plain sites with no build step |
+| **Hugo** | Markdown / Go templates | Blogs, docs, and marketing sites, built in seconds |
+| **Gatsby** | React | Content-rich marketing sites and blogs |
+| **Docusaurus** | React / MDX | Product and open-source documentation |
+| **VitePress** | Vue / Markdown | Documentation and simple content sites |
+| **Eleventy** | JavaScript / Markdown | Blogs and small sites with little JavaScript |
 
 ### Full-stack
 
@@ -91,6 +119,22 @@ Point the frontend at the backend's domain (a build-time variable such as `VITE_
     | SvelteKit | `npm run build` | `node build/index.js` |
     | Next.js | `npm run build` | its standalone server (see [Next.js sites](/websites/nextjs)) |
   </Tab>
+  <Tab title="Python, Go, Java, .NET, Bun">
+    1. **The toolchain**: the site's Python, Go, Java (Temurin JDK, with Maven), .NET, or Bun version is downloaded on the first deploy if the server does not have it (into `/opt/laravelify-tools`, official releases only).
+    2. **Install**, **build**, and **start** with the defaults below, or your own commands. The app must listen on `127.0.0.1` and the `PORT` environment variable.
+
+    | | Install | Build | Start |
+    | --- | --- | --- | --- |
+    | Django | `uv venv` + `uv pip install -r requirements.txt gunicorn` | `collectstatic` and `migrate` | `gunicorn <project>.wsgi` (found next to `manage.py`) |
+    | Flask | `uv venv` + `uv pip install -r requirements.txt gunicorn` | none | `gunicorn app:app` |
+    | FastAPI | `uv venv` + `uv pip install -r requirements.txt uvicorn` | none | `uvicorn main:app` |
+    | Go | `go mod download` | `go build -o .laravelify-app .` | `./.laravelify-app` |
+    | Bun | `bun install` | none | `bun run start` |
+    | Spring Boot | none | `./mvnw package`, `./gradlew bootJar`, or `mvn package` (tests skipped) | `java -jar` the built jar, on `127.0.0.1:$PORT` |
+    | ASP.NET Core | `dotnet restore` | `dotnet publish -c Release` | `dotnet` the published `<Project>.dll` (`ASPNETCORE_URLS` set to the port) |
+
+    Each Python site gets its own virtual environment in `.venv`, made with [uv](https://docs.astral.sh/uv/).
+  </Tab>
   <Tab title="Frontend builds">
     1. **Install** dependencies from your lockfile.
     2. **Build** with `npm run build` (or your own command).
@@ -104,6 +148,11 @@ Point the frontend at the backend's domain (a build-time variable such as `VITE_
     | Svelte | `dist` or `build` | `index.html` |
     | Astro | `dist` | 404 |
     | Static HTML | the repository (or the folder you choose) | 404 |
+    | Hugo | `public` (built with `hugo --minify`, Hugo extended) | 404 |
+    | Gatsby | `public` | 404 |
+    | Docusaurus | `build` | `index.html` |
+    | VitePress | `docs/.vitepress/dist` (built with `npm run docs:build`) | 404 |
+    | Eleventy | `_site` | 404 |
   </Tab>
 </Tabs>
 
@@ -113,7 +162,8 @@ Open **Runtime** on the website. Empty fields use the defaults above.
 
 | Setting | For | What it does |
 | --- | --- | --- |
-| Node.js version | Node servers and front-end builds | 20, 22, or 24 for installing, building, and running |
+| Node.js version | Node servers and front-end builds | 18, 20, 22, 24, or any release from 14 on (like `19.0.0`), downloaded on the next deploy when missing |
+| Python / Go / Java / .NET / Bun / Hugo version | Those sites | Like Python 3.12, Go 1.24, Java 21, .NET 8.0, Bun 1.2, Hugo 0.145; a short version gets its newest patch release |
 | Install command | Node servers and front-end builds | Replaces the automatic install, like `npm ci --legacy-peer-deps` |
 | Build command | Node servers and front-end builds | Replaces the default build, like `pnpm build:prod` |
 | Start command | Node servers (not Next.js) | What PM2 runs from the site folder, like `node dist/server.js` |
@@ -139,4 +189,12 @@ The **Environment** tab writes the site's `.env` file.
 - **Nuxt:** the default Nitro `node-server` preset, which writes `.output/`.
 - **SvelteKit:** use `@sveltejs/adapter-node`, which writes `build/`. Laravelify sets `ORIGIN` from the site's address so form posts work.
 - **Angular, React, Vue, Svelte:** a `build` script in `package.json`.
+- **Django:** a `requirements.txt` with Django, and `ALLOWED_HOSTS` that includes your domain. Set `STATIC_ROOT` for `collectstatic`.
+- **Flask:** the app object `app` in `app.py`, or set the start command (like `gunicorn wsgi:application`).
+- **FastAPI:** the app object `app` in `main.py`, or set the start command.
+- **Go:** a `go.mod`; the program listens on `127.0.0.1:$PORT`.
+- **Bun:** a `start` script in `package.json`, listening on `process.env.PORT`.
+- **Spring Boot:** a `pom.xml` or `build.gradle` that builds an executable jar (the Spring Boot plugin does). The Java version comes from `<java.version>` or the Gradle toolchain.
+- **ASP.NET Core:** one `.csproj` in the repository root; the app reads its port from `ASPNETCORE_URLS` (the default).
+- **Hugo:** a `hugo.toml` (or `config.toml`) in the repository root.
 - **Astro:** static output (the default). Server rendering needs the Node adapter, which fits **Node.js** with start command `node dist/server/entry.mjs`.

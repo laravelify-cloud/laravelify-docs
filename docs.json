@@ -95,6 +95,7 @@
           "websites/example-projects",
           "websites/laravel",
           "websites/nextjs",
+          "websites/php-configuration",
           "websites/github",
           "websites/environment-nginx-processes",
           "websites/cloudflare-tunnels"

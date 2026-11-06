@@ -40,6 +40,15 @@ On the website's **Deployments** tab, copy the **Payload URL** and **Secret**. I
 
 Laravelify checks the `X-Hub-Signature-256` signature and deploys only when the push is to the site's branch. The **Deployments** tab shows the last delivery and why it did or did not deploy.
 
+## Roll back a deploy
+
+On the **Deployments** tab, the deploy whose code is live is marked **Live**, and every other finished deploy has **Roll back to this**:
+
+1. The code live now is saved first, as a `.tar.gz` in the website's own folder (never served). The rollback's row gets **Replaced code** to download it.
+2. The older commit goes live with the usual install, migrations, and restart.
+
+To put the newer changes back, roll back to the newer deploy. The next push to the branch deploys the newest commit again, and database migrations from newer deploys are not undone.
+
 ## Auto deploy
 
 Turn **Auto deploy** off on the Deployments tab to keep pushes from deploying (they are still recorded). Use **Deploy** to deploy by hand at any time, and **Stop deploy** to cancel a running one.

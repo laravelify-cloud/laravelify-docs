@@ -1,15 +1,21 @@
 ---
 title: "Database"
-description: "Browse, search, and change every MySQL database, with a change log that undoes one row at a time."
+description: "Browse, search, and change every database on the server: MySQL, PostgreSQL, SQLite and MongoDB, with an SQL editor, SQL history, and a change log that undoes one row at a time."
 ---
 
-**Tools → Database** shows every MySQL database on the server with its size and tables. It uses the panel's own MySQL login, so it sees everything the panel manages.
+**Tools → Database** shows every database on the server: MySQL (or MariaDB), PostgreSQL, SQLite (each website's file), and MongoDB, with its engine, size and tables. It uses the panel's own logins, so it sees everything the panel manages.
 
 ## Databases and tables
 
-- Sort databases and tables by name or size (tables also by rows), and filter them by name.
-- **Back up** sends one database to your backup storage (it shows under **Backups → Databases**).
-- Sizes and row counts are MySQL's own figures and can be a little behind.
+- The lists are spreadsheet grids: click a header to sort, use the funnel on a header to filter by its values (with counts) or a condition, and the **⋮** menu to pin, size, and hide columns. **Search** looks in every column.
+- **Export** downloads a dump (MySQL and PostgreSQL as SQL, SQLite as the database file, MongoDB as a `mongodump` archive), and **Back up** sends one database to your backup storage (it shows under **Backups → Databases**).
+- Sizes and row counts are each engine's own figures and can be a little behind.
+
+## PostgreSQL, SQLite and MongoDB
+
+- PostgreSQL and SQLite tables open in the same rows grid as MySQL: search, header filters, sorting, adding, changing, and deleting rows (by primary key; a table without one is read-only), and an **SQL** tab.
+- MongoDB collections show their documents as JSON, newest first, with a JSON filter like `{"status": "active"}`. Add, change, or delete one document at a time.
+- **Changes and undo** is for MySQL only; changes made in the other engines cannot be undone from the panel.
 
 ## Rows
 
@@ -68,7 +74,19 @@ Only the setting is saved. The data in the database is not changed, and the pane
 
 ## SQL
 
-Run SQL from the **SQL** tab of the Database page (pick the database), of a database, or of a table (it starts with `SELECT * FROM table LIMIT 100`). A selection runs on its own, otherwise the whole box; **Ctrl+Enter** runs. Up to 200 rows come back, and a result can be downloaded as `INSERT` statements. SQL typed here is not in the change log, so it cannot be undone.
+Run SQL from the **SQL** tab of the Database page (pick the database), of a database, or of a table (it starts with `SELECT * FROM table LIMIT 100`).
+
+- The editor colors the SQL, numbers the lines, and **autocompletes** keywords, the database's tables, and their columns (also after an alias, like `m.` in `FROM migrations m`). **Ctrl+Space** shows the list, **Tab** or **Enter** takes a suggestion.
+- A selection runs on its own, otherwise the whole box; **Ctrl+Enter** runs.
+- Up to 1,000 rows come back, in the rows grid: filter any column by values or a condition, sort, search, and page through them. A result can be downloaded as `INSERT` statements.
+- SQL typed here is not in the change log, so it cannot be undone.
+
+## SQL history
+
+The **History** tab of a database keeps every query run in it (the last 500), newest first and grouped by day: what came back, how long it took, and who ran it. Filter by **Read**, **Changed**, or **Failed**, or search the SQL.
+
+- For an `UPDATE` or `DELETE` of one table, the rows it matched are saved before it runs (up to 200), and for an `UPDATE` also after: **Changed rows** shows each changed cell as old → new.
+- **Run** puts the query back in the editor and runs it (it asks first when it changed rows); **Edit** only puts it there.
 
 ## Triggers, events, procedures, functions
 

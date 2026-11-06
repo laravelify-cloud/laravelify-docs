@@ -20,7 +20,7 @@ A **group** is a folder for related websites, like `production`, `staging`, or o
 | Cloudflare tunnel | Optional. Adds the domain to that tunnel |
 | PHP / Node version | PHP 8.0–8.5 for PHP sites, Node 20/22/24 for Node servers and front-end builds |
 | Build settings | Optional install, build, and start commands, and the output folder |
-| Create a MySQL database | PHP sites: creates a database and user and fills `DB_*` in `.env` |
+| Create a database | PHP and Node sites: pick MySQL (or MariaDB), PostgreSQL, MongoDB, or SQLite, whichever the server has. Creates the database and a user, and fills `DB_*` (`MONGODB_*` for MongoDB) and, for Node, `DATABASE_URL` in `.env` |
 
 The site is created under `/var/www/{slug}` with an nginx file, a process file where the type has one, and an environment file from templates. Nothing runs until the first deploy.
 
