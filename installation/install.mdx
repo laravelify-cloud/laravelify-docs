@@ -15,10 +15,12 @@ The installer asks for:
 
 | Prompt | Example | Used for |
 | --- | --- | --- |
-| Database password (twice) | a long random password | MySQL or MariaDB root and phpMyAdmin sign-in, PostgreSQL's `postgres`, MongoDB's `admin`. Not asked with SQLite only |
 | Laravelify panel domain | `panel.example.com` | The panel's address |
-| phpMyAdmin domain | `db.example.com` | phpMyAdmin's address (only with `--tools=phpmyadmin` and MySQL or MariaDB) |
 | Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare |
+
+The database password is not asked: the installer makes a random 40-character one for MySQL or MariaDB root (and phpMyAdmin sign-in), PostgreSQL's `postgres`, and MongoDB's `admin`. The panel shows it on **Server → MySQL** after your authenticator code, and you can change it there. To pick your own, run the installer with `MYSQL_ROOT_PASSWORD=...`.
+
+phpMyAdmin is not asked either: it opens at `https://<panel domain>/phpmyadmin`. Change the path later on **Server → phpMyAdmin**.
 
 It always installs the **latest release**: the command downloads the installer of the newest GitHub release, and that installer downloads the matching panel.
 
@@ -37,7 +39,7 @@ The installer works through the install one step at a time. Each step shows a sp
 │  Node.js              22 24 (system: 24)
 │  Log                  /var/log/laravelify-install.log
 │
-◆  Downloaded Laravelify 0.3.0-beta.80 4s
+◆  Downloaded Laravelify 0.3.0-beta.81 4s
 ◆  Installing nginx, Redis, Supervisor, Git, and tools 38s
 ◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
 ◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
