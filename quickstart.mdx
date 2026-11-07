@@ -21,10 +21,10 @@ Once you have a fresh Ubuntu server and a domain on Cloudflare, this guide takes
 
     <InstallCommand />
 
-    It asks for two things: the Cloudflare tunnel token (checked at once) and the panel domain (like `panel.example.com`). The database password is made for you. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
+    It asks for the Cloudflare tunnel token (checked at once), an optional Cloudflare API token, and the panel domain (like `panel.example.com`). With the API token it adds the panel's route and DNS record in Cloudflare for you. The database password is made for you. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
   </Step>
   <Step title="Point the domains at the tunnel">
-    In Cloudflare Zero Trust, open your tunnel → **Public hostnames** and add the panel domain with the service `http://localhost:80`.
+    Skip this if you gave the installer an API token. Otherwise, in Cloudflare Zero Trust open your tunnel → **Routes** → **Add route** → **Published application**, and send the panel domain to `http://localhost:80`.
   </Step>
   <Step title="Create the admin account">
     Open the setup link the installer printed (`https://panel.example.com/setup?token=...`). Enter your name, email, and password. There is only one admin account, and nobody can register after it exists.

@@ -16,6 +16,7 @@ The installer asks for:
 | Prompt | Example | Used for |
 | --- | --- | --- |
 | Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare. Asked first and checked; the whole `cloudflared service install …` command works too |
+| Cloudflare API token (optional) | `Gq3…` | Adds the panel's route on the tunnel and its DNS record, and is saved in **Settings → Cloudflare**. A tunnel token cannot do this. Create one under My Profile → API Tokens with Account → Cloudflare Tunnel → Edit and Zone → DNS → Edit. Press Enter to skip and add the route by hand. |
 | Laravelify panel domain | `panel.example.com` | The panel's address |
 
 The database password is not asked: the installer makes a random 40-character one for MySQL or MariaDB root (and phpMyAdmin sign-in), PostgreSQL's `postgres`, and MongoDB's `admin`. The panel shows it on **Server → MySQL** after your authenticator code, and you can change it there. To pick your own, run the installer with `MYSQL_ROOT_PASSWORD=...`.
@@ -38,7 +39,7 @@ The installer works through the install one step at a time. Each step shows a sp
 │  Node.js              22 24 (system: 24)
 │  Log                  /var/log/laravelify-install.log
 │
-◆  Downloaded Laravelify 0.3.0-beta.86 4s
+◆  Downloaded Laravelify 0.3.0-beta.87 4s
 ◆  Installing nginx, Redis, Supervisor, Git, and tools 38s
 ◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
 ◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
@@ -103,6 +104,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | `PANEL_DOMAIN` | asked | Panel hostname |
 | `PHPMYADMIN_PATH` | `/phpmyadmin` | phpMyAdmin's path on the panel's address |
 | `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
+| `CLOUDFLARE_API_TOKEN` | asked (optional) | A Cloudflare API token (Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit). The installer uses it to add the panel's route and DNS record, and saves it in **Settings → Cloudflare**. Set it empty to skip. |
 | `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
 | `LARAVELIFY_NODE_VERSIONS` | `20 22 24` | Same as `--node` |
 | `LARAVELIFY_DATABASES` | `mysql` | Same as `--databases` |
@@ -147,7 +149,7 @@ The panel lives in `/opt/laravelify`. Sites live in `/var/www/{slug}`.
 
 <Steps>
   <Step title="Add the public hostnames in Cloudflare">
-    Tunnel → **Public hostnames**: `panel.example.com` → `http://localhost:80`.
+    Skip this if you gave the installer a Cloudflare API token: it added them. Otherwise, tunnel → **Routes** → **Add route** → **Published application**: `panel.example.com` → `http://localhost:80`.
   </Step>
   <Step title="Create the admin and enable 2FA">
     Open the setup link the installer printed (`https://panel.example.com/setup?token=...`).
