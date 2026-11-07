@@ -34,7 +34,6 @@ The installer works through the install one step at a time. Each step shows a sp
 ◇  Settings
 │  Server               Ubuntu 24.04.3 LTS
 │  Panel                https://panel.example.com
-│  phpMyAdmin           https://db.example.com
 │  PHP-FPM              8.3 8.4
 │  Node.js              22 24 (system: 24)
 │  Log                  /var/log/laravelify-install.log
@@ -44,7 +43,7 @@ The installer works through the install one step at a time. Each step shows a sp
 ◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
 ◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
 ◆  Installing MySQL 8.4 1m 12s
-◒  Installing phpMyAdmin 9s
+◒  Installing Node.js 24, npm, and PM2 9s
 ```
 
 ## Choose what to install
@@ -62,10 +61,10 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo bash -s -- --php=8.4 -
 | `--databases=LIST` | `--databases=mariadb,postgresql` | Database servers for your websites: `mysql` or `mariadb` (one of the two), `postgresql`, `mongodb`, or `none`. Default: `mysql`. SQLite always works: it is a file, not a server. Without MySQL or MariaDB the panel keeps its own data in SQLite and phpMyAdmin is left out. |
 | `--panel-domain=HOST` | `--panel-domain=panel.example.com` | The panel's domain (otherwise asked) |
 | `--tools=LIST` | `--tools=phpmyadmin,vscode` | Optional tools: `phpmyadmin`, `vscode` (VS Code in the browser), `glitchtip` (error tracking, set up after the first sign-in), or `none`. Default: `vscode`. phpMyAdmin is only installed when you ask for it. |
-| `--phpmyadmin-domain=HOST` | `--phpmyadmin-domain=db.example.com` | phpMyAdmin's domain, with `--tools=phpmyadmin` (otherwise asked) |
+| `--phpmyadmin-path=PATH` | `--phpmyadmin-path=/db` | phpMyAdmin's path on the panel's address, with `--tools=phpmyadmin`. Default: `/phpmyadmin`. |
 | `--help` | | Prints the options |
 
-The database password and the Cloudflare tunnel token have no option on purpose: they are always asked on the server (or given as environment variables, below), so they never end up in a copied command or your shell history.
+The Cloudflare tunnel token has no option on purpose: it is always asked on the server (or given as an environment variable, below), so they never end up in a copied command or your shell history.
 
 To add a version later, run a repair with the new list, like `curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_REINSTALL=1 bash -s -- --php=8.2,8.3,8.4`. It installs only what is missing.
 
@@ -80,7 +79,6 @@ A repair run skips what is already installed, and nothing needs retyping: it sho
 ```text
 Found the settings from a previous install:
   Panel domain:            panel.example.com
-  phpMyAdmin domain:       db.example.com
   Database password:       ******** (saved)
   Cloudflare tunnel token: ******** (saved)
 Use these settings? [Y/n]
@@ -94,18 +92,16 @@ Every prompt can be given as an environment variable, which is handy for provisi
 
 ```bash
 curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
-  MYSQL_ROOT_PASSWORD='change-me' \
   PANEL_DOMAIN=panel.example.com \
-  PHPMYADMIN_DOMAIN=db.example.com \
   CLOUDFLARE_TUNNEL_TOKEN='eyJh…' \
   bash
 ```
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `MYSQL_ROOT_PASSWORD` | asked | The database password (no spaces, quotes, or backslashes) |
+| `MYSQL_ROOT_PASSWORD` | 40 random characters | The database password (no spaces, quotes, or backslashes) |
 | `PANEL_DOMAIN` | asked | Panel hostname |
-| `PHPMYADMIN_DOMAIN` | asked | phpMyAdmin hostname (different from the panel) |
+| `PHPMYADMIN_PATH` | `/phpmyadmin` | phpMyAdmin's path on the panel's address |
 | `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
 | `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
 | `LARAVELIFY_NODE_VERSIONS` | `20 22 24` | Same as `--node` |
@@ -120,14 +116,14 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 
 <AccordionGroup>
   <Accordion title="Web and PHP">
-    - **nginx**, the web server for every site, the panel, and phpMyAdmin.
+    - **nginx**, the web server for every site and the panel.
     - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5**, or the ones you chose with `--php` (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
     - **Composer**.
   </Accordion>
   <Accordion title="Data">
-    - **MySQL 8.4 LTS** (Ubuntu's MySQL as a fallback) by default, or **MariaDB** with `--databases=mariadb`, with the password you chose. **phpMyAdmin** on its own domain, with one-click sign-in from the panel, when you pick it with `--tools=phpmyadmin`.
-    - **PostgreSQL** (`--databases=postgresql`): Ubuntu's version, on 127.0.0.1, with the `postgres` user's password set to yours.
-    - **MongoDB 8.0** (`--databases=mongodb`): from MongoDB's repository, on 127.0.0.1, with sign-in turned on and an `admin` user with your password.
+    - **MySQL 8.4 LTS** (Ubuntu's MySQL as a fallback) by default, or **MariaDB** with `--databases=mariadb`, with a random 40-character password. **phpMyAdmin** at `/phpmyadmin` of the panel, with one-click sign-in from the panel, when you pick it with `--tools=phpmyadmin`.
+    - **PostgreSQL** (`--databases=postgresql`): Ubuntu's version, on 127.0.0.1, with the same password for the `postgres` user.
+    - **MongoDB 8.0** (`--databases=mongodb`): from MongoDB's repository, on 127.0.0.1, with sign-in turned on and an `admin` user with the same password.
     - **SQLite**, always: a website can keep its data in a file in its folder.
     - **Redis**, available to your sites. The panel keeps its own sessions, queue, and cache in its database: MySQL or MariaDB when installed, otherwise SQLite.
     - PHP gets the matching drivers: `pgsql` with PostgreSQL, `mongodb` with MongoDB.
@@ -151,7 +147,7 @@ The panel lives in `/opt/laravelify`. Sites live in `/var/www/{slug}`.
 
 <Steps>
   <Step title="Add the public hostnames in Cloudflare">
-    Tunnel → **Public hostnames**: `panel.example.com` → `http://localhost:80` and `db.example.com` → `http://localhost:80`.
+    Tunnel → **Public hostnames**: `panel.example.com` → `http://localhost:80`.
   </Step>
   <Step title="Create the admin and enable 2FA">
     Open the setup link the installer printed (`https://panel.example.com/setup?token=...`).

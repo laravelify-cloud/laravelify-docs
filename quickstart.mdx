@@ -21,10 +21,10 @@ Once you have a fresh Ubuntu server and a domain on Cloudflare, this guide takes
 
     <InstallCommand />
 
-    It asks for four things: a MySQL root password, the panel domain (like `panel.example.com`), a phpMyAdmin domain (like `db.example.com`), and the Cloudflare tunnel token. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
+    It asks for two things: the Cloudflare tunnel token (checked at once) and the panel domain (like `panel.example.com`). The database password is made for you. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
   </Step>
   <Step title="Point the domains at the tunnel">
-    In Cloudflare Zero Trust, open your tunnel → **Public hostnames** and add both domains with the service `http://localhost:80`.
+    In Cloudflare Zero Trust, open your tunnel → **Public hostnames** and add the panel domain with the service `http://localhost:80`.
   </Step>
   <Step title="Create the admin account">
     Open the setup link the installer printed (`https://panel.example.com/setup?token=...`). Enter your name, email, and password. There is only one admin account, and nobody can register after it exists.
