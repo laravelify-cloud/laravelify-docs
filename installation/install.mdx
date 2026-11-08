@@ -61,7 +61,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo bash -s -- --php=8.4 -
 | `--node=LIST` | `--node=22,24` | Node.js majors: 18, 20, 22, 24. Any other release (like 19.0.0) can be set per website and is downloaded on its first deploy. The newest one is the system Node.js (npm, PM2, and sites set to a version that is not installed). |
 | `--databases=LIST` | `--databases=mariadb,postgresql` | Database servers for your websites: `mysql` or `mariadb` (one of the two), `postgresql`, `mongodb`, or `none`. Default: `mysql`. SQLite always works: it is a file, not a server. Without MySQL or MariaDB the panel keeps its own data in SQLite and phpMyAdmin is left out. |
 | `--panel-domain=HOST` | `--panel-domain=panel.example.com` | The panel's domain (otherwise asked) |
-| `--tools=LIST` | `--tools=phpmyadmin,vscode` | Optional tools: `phpmyadmin`, `vscode` (VS Code in the browser), `glitchtip` (error tracking, set up after the first sign-in), or `none`. Default: `vscode`. phpMyAdmin is only installed when you ask for it. |
+| `--tools=LIST` | `--tools=phpmyadmin,vscode` | Optional tools: `phpmyadmin`, `vscode` (VS Code in the browser), `glitchtip` (error tracking, set up after the first sign-in), or `none`. Default: `phpmyadmin,vscode` (phpMyAdmin only with MySQL or MariaDB). |
 | `--phpmyadmin-path=PATH` | `--phpmyadmin-path=/db` | phpMyAdmin's path on the panel's address, with `--tools=phpmyadmin`. Default: `/phpmyadmin`. |
 | `--help` | | Prints the options |
 
@@ -108,7 +108,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
 | `LARAVELIFY_NODE_VERSIONS` | `20 22 24` | Same as `--node` |
 | `LARAVELIFY_DATABASES` | `mysql` | Same as `--databases` |
-| `LARAVELIFY_TOOLS` | `vscode` | Same as `--tools` |
+| `LARAVELIFY_TOOLS` | `phpmyadmin,vscode` | Same as `--tools` |
 | `LARAVELIFY_VERSION` | `latest` | Release to install, like `1.2.0` |
 | `LARAVELIFY_REPO` | the official repository | GitHub `owner/name` to download releases from (for forks) |
 | `LARAVELIFY_SOURCE` | — | Install from a local folder instead (development). Its `.env`, `storage`, and caches are never copied, so the server keeps its own keys. |
