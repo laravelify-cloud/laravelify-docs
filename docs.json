@@ -75,6 +75,7 @@
         "pages": [
           "installation/requirements",
           "installation/install",
+          "installation/laravelify-cloud",
           "installation/configuration",
           "installation/updating",
           "installation/uninstall"

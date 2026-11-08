@@ -52,7 +52,7 @@ The installer works through the install one step at a time. Each step shows a sp
 
 ## Choose what to install
 
-By default the installer adds every PHP-FPM version from 8.0 to 8.5, Node.js 20, 22, and 24, and MySQL. To install only what your sites use (it is faster and uses less disk), use the **install command builder** on [laravelify.cloud](https://laravelify.cloud/#install). Pick what you will run (Laravel 12, Next.js 16, …) and only the versions those need are ticked; pick the databases; optionally type your domains, and copy the command. Or write the options yourself:
+By default the installer adds PHP-FPM 8.4, Node.js 24, and MySQL, so it finishes in a few minutes. Any other version is installed by the panel the first time a website needs it (one to three minutes). To install more up front, use the **install command builder** on [laravelify.cloud](https://laravelify.cloud/#install). Pick what you will run (Laravel 12, Next.js 16, …) and only the versions those need are ticked; pick the databases; optionally type your domains, and copy the command. Or write the options yourself:
 
 ```bash
 curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo bash -s -- --php=8.4 --node=22 --databases=mysql,postgresql
@@ -109,8 +109,8 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | `LARAVELIFY_CLOUD_KEY` | — | An install key from app.laravelify.cloud: a free `<name>.laravelify.cloud` address, no Cloudflare questions |
 | `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
 | `CLOUDFLARE_API_TOKEN` | asked (optional) | A Cloudflare API token (Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit). The installer uses it to add the panel's route and DNS record, and saves it in **Settings → Cloudflare**. Set it empty to skip. |
-| `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
-| `LARAVELIFY_NODE_VERSIONS` | `20 22 24` | Same as `--node` |
+| `LARAVELIFY_PHP_VERSIONS` | `8.4` | Same as `--php` |
+| `LARAVELIFY_NODE_VERSIONS` | `24` | Same as `--node` |
 | `LARAVELIFY_DATABASES` | `mysql` | Same as `--databases` |
 | `LARAVELIFY_TOOLS` | `phpmyadmin,vscode` | Same as `--tools` |
 | `LARAVELIFY_VERSION` | `latest` | Release to install, like `1.2.0` |
@@ -123,7 +123,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 <AccordionGroup>
   <Accordion title="Web and PHP">
     - **nginx**, the web server for every site and the panel.
-    - **PHP-FPM 8.0, 8.1, 8.2, 8.3, 8.4, 8.5**, or the ones you chose with `--php` (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
+    - **PHP-FPM 8.4**, or the ones you chose with `--php` (whichever the PHP repository still publishes for your Ubuntu), with the common extensions Laravel needs (including GD, for resizing JPEG, PNG, and WebP images). Updating the panel adds GD to a PHP version that does not have it yet.
     - **Composer**.
   </Accordion>
   <Accordion title="Data">
@@ -135,7 +135,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
     - PHP gets the matching drivers: `pgsql` with PostgreSQL, `mongodb` with MongoDB.
   </Accordion>
   <Accordion title="Node and processes">
-    - **Node.js 20, 22, and 24**, or the ones you chose with `--node` (through `n`), and **PM2** for Node.js, Next.js, Nuxt, Python, Go, and Bun sites.
+    - **Node.js 24**, or the ones you chose with `--node` (through `n`), and **PM2** for Node.js, Next.js, Nuxt, Python, Go, and Bun sites.
     - **Python, Go, Bun, and Hugo** are not installed up front: the first website that needs one downloads it into `/opt/laravelify-tools` (see [Frameworks](/websites/frameworks)).
     - **Supervisor**, which runs the panel's `laravelify-queue` (deploys) and `laravelify-scheduler` (monitoring, alerts), plus each Laravel site's workers.
   </Accordion>

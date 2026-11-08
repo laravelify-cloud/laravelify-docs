@@ -1,0 +1,40 @@
+---
+title: "Laravelify Cloud"
+description: "A free laravelify.cloud address, Telegram alerts, and one-click sign-in for your panels, from app.laravelify.cloud."
+---
+
+[Laravelify Cloud](https://app.laravelify.cloud) is an optional, free companion to your panels. It never runs your websites: they stay on your own servers. It gives you:
+
+- **A free address** like `https://john-k3x9q7m2pa.laravelify.cloud` for a panel, with no Cloudflare account. Websites on that panel can use free `john-<name>.laravelify.cloud` domains too.
+- **Telegram alerts** from every panel, through the Laravelify Cloud bot, and a history of them.
+- **Open panel**: one click from Cloud to a panel, without its password.
+- **Monitoring**: Cloud checks each panel every minute and tells you on Telegram when one goes down.
+
+## Install with a free address
+
+1. Sign in to [app.laravelify.cloud](https://app.laravelify.cloud) with Telegram, or with a username and password.
+2. On the **Dashboard**, the **Install from a terminal** card shows your **install key** (`lfy_…`), and the install command with the key already in it.
+3. Run the command on a fresh Ubuntu server. You can also run the plain install command, choose **1** (free address), and paste the key.
+
+```bash
+curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_CLOUD_KEY=lfy_… bash
+```
+
+Laravelify Cloud makes the tunnel and its DNS record, so the installer asks no Cloudflare questions. The server keeps an id in `/etc/laravelify/cloud-server-id`, so installing it again gives the same address. Each account has a few free addresses, shared by panels and website domains. Deleting a server in Cloud frees its address.
+
+<Warning>
+The install key is yours: anyone who has it can use your free addresses. If it was shared or pasted somewhere, click **Make a new key**. The old one stops working at once.
+</Warning>
+
+## Telegram alerts
+
+Panels installed with your key, or from app.laravelify.cloud, send their notifications through Laravelify Cloud. A panel holds only a token for its own server, never the bot's token, and its messages reach only you. The panel's **Settings → Telegram bot** page says so. To use your own bot instead, paste its token there.
+
+- **Signed in with a username and password?** Click your name → **Link Telegram**, or **Link Telegram** on the **Notifications** page. A Telegram account can be linked to one Laravelify Cloud account only.
+- **Notifications** lists every message from the last 30 days: sent, not delivered, or held because Telegram was not linked yet.
+
+## Open panel
+
+Each installed server's card on the Dashboard has an **Open panel** button. It makes a one-time code that works once, for 60 seconds, and only on that server. The panel checks the code with Laravelify Cloud using its own server token, which never reaches the browser. The code replaces the password only: the panel still asks for its 6-digit authenticator code.
+
+A panel that is not linked to Cloud ignores these links; sign in with the password as usual.
