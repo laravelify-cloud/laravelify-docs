@@ -71,6 +71,10 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 | `create-website` | Create a site from a repository (or an example project) on a domain or HTTP port, with `www` and other domains, env variables and a MySQL database, and deploy it |
 | `deploy-website`, `cancel-deployment` | Deploy again, or stop a deploy that hangs |
 | `get-deployment`, `list-deployments` | Follow a deploy's status and log, and see the history |
+| **Environments** | |
+| `list-site-environments` | A website's environments (production, development, staging…) with branch, domains, status, last deploy, and database |
+| `create-site-environment` | Add an environment that deploys another branch: its own folder, port, PM2 app or workers, nginx, `.env` (copied from production or another environment, with your variables on top), Cloudflare route and DNS, and database. Deploys right away |
+| `update-site-environment`, `delete-site-environment` | Rename an environment or change its branch and domains; delete one (its folder goes to the trash, its database stays). Production cannot be deleted |
 | **Look** | |
 | `list-websites`, `get-website` | What runs on the server, with domains and the last deployment |
 | `list-groups`, `list-site-types`, `list-sources`, `list-ports` | Groups, the kinds of app, the GitHub Apps (and their repositories), tunnels, and which port is used by what |
@@ -98,6 +102,10 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 ## Deploying a folder from your computer
 
 The server cannot read files on your computer, so the assistant pushes the folder to a new private GitHub repository first (`gh repo create --private --source . --push`), then deploys that repository. Make sure your Laravelify GitHub App can read it (GitHub → **Settings → Applications** → the App → **Repository access**). After that, every push deploys by itself.
+
+## Production and development: one site, many environments
+
+Ask for "production on main and development on dev" and the assistant makes **one** website with two environments, never two websites: `create-website` for production, then `create-site-environment` for development, with its own branch, domain or port, and database. Every per-site tool (`deploy-website`, `get-deployment`, `get-environment`, `update-environment`, `run-command`, `get-logs`, `set-domains`, and the others) takes an optional `environment` (its id or name, like `development`); without it, the tool works on production. A push to GitHub deploys only the environment whose branch it is. The same environments show in the panel above the website's settings.
 
 ## Domains: one site, many names
 
