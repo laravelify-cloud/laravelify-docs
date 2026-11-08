@@ -11,7 +11,10 @@ SSH into the server as a user that can use `sudo`, then run:
 
 <InstallCommand />
 
-The installer asks for:
+The installer first asks where the panel lives:
+
+- **A free `https://<name>.laravelify.cloud` address**: paste the install key from [app.laravelify.cloud](https://app.laravelify.cloud) → Dashboard → **Install from a terminal**. Laravelify Cloud makes the tunnel and its DNS record, so nothing else about Cloudflare is asked. The server keeps an id in `/etc/laravelify/cloud-server-id`, so installing it again gives the same address. Each account has a few free addresses; deleting a server in Laravelify Cloud frees its address.
+- **Your own domain**, on your own Cloudflare tunnel. Then it asks for:
 
 | Prompt | Example | Used for |
 | --- | --- | --- |
@@ -39,7 +42,7 @@ The installer works through the install one step at a time. Each step shows a sp
 │  Node.js              22 24 (system: 24)
 │  Log                  /var/log/laravelify-install.log
 │
-◆  Downloaded Laravelify 0.3.0-beta.89 4s
+◆  Downloaded Laravelify 0.3.0-beta.90 4s
 ◆  Installing nginx, Redis, Supervisor, Git, and tools 38s
 ◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
 ◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
@@ -103,6 +106,7 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | `MYSQL_ROOT_PASSWORD` | 40 random characters | The database password (no spaces, quotes, or backslashes) |
 | `PANEL_DOMAIN` | asked | Panel hostname |
 | `PHPMYADMIN_PATH` | `/phpmyadmin` | phpMyAdmin's path on the panel's address |
+| `LARAVELIFY_CLOUD_KEY` | — | An install key from app.laravelify.cloud: a free `<name>.laravelify.cloud` address, no Cloudflare questions |
 | `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
 | `CLOUDFLARE_API_TOKEN` | asked (optional) | A Cloudflare API token (Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit). The installer uses it to add the panel's route and DNS record, and saves it in **Settings → Cloudflare**. Set it empty to skip. |
 | `LARAVELIFY_PHP_VERSIONS` | `8.0 8.1 8.2 8.3 8.4 8.5` | Same as `--php` |
