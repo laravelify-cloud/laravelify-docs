@@ -1,0 +1,37 @@
+---
+title: "Environments"
+description: "Production and development (or staging) of one app: one website, several branches, each with its own address, database, and .env."
+---
+
+A website can have **environments**: production (the website itself) plus, for example, **development** on the `dev` branch and **staging** on `staging`. Each environment is separate from production:
+
+| Its own | Details |
+| --- | --- |
+| Branch | Pushing to `dev` deploys only the development environment |
+| Address | A domain (like `dev.example.com`, with its Cloudflare route and DNS) or a free HTTP port |
+| Folder and processes | Its own folder, PHP-FPM or PM2 app, Supervisor workers, and nginx file |
+| `.env` | Copied from production when it is made (its address, Redis prefix, and database lines become its own), then edited on its own |
+| Database | Its own database and user when production has one |
+
+## Add one
+
+Open the website. Above its settings, the **Environments** bar shows production and the others. Click **+ Add**, then:
+
+1. **Name**: like `development` or `staging`.
+2. **Branch**: an existing branch, or a new one made on GitHub from another branch.
+3. **Address**: a random free subdomain on your Cloudflare domains, a domain you type, or a free HTTP port.
+
+It deploys right away. Click an environment in the bar to open it: every tab (Deployments, Environment, Logs, Terminal, Files, Database…) then shows that environment.
+
+## With an AI assistant (MCP)
+
+Ask for "production on main and development on dev" and the assistant makes **one** website with two environments, never two websites:
+
+| Tool | What it does |
+| --- | --- |
+| `list-site-environments` | The environments of a website, with branch, domains, status, last deploy, and database |
+| `create-site-environment` | Add one: name, branch, domain or port, its own database, `.env` copied from another environment with your variables on top; deploys unless `deploy` is false |
+| `update-site-environment` | Rename it, change its branch, domain, or other domains |
+| `delete-site-environment` | Delete one: its folder goes to the trash and its database stays. Production cannot be deleted |
+
+Every other per-site tool (`deploy-website`, `get-deployment`, `get-environment`, `update-environment`, `run-command`, `get-logs`, `set-domains`, and the rest) takes `environment` (its id or name). Without it, the tool works on production. See [MCP](/tools/mcp).

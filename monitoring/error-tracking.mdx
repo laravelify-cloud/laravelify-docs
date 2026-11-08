@@ -7,7 +7,9 @@ Laravelify can install [GlitchTip](https://glitchtip.com) (open source, Sentry c
 
 ## Turn it on
 
-Website → **GlitchTip** → **Turn on error tracking**. It takes a minute or two and uses about 250 MB of RAM. GlitchTip then runs at `https://your-panel/glitchtip`.
+Website → **GlitchTip** → **Turn on error tracking**. It takes a few minutes and uses about 250 MB of RAM. GlitchTip then runs at `https://your-panel/glitchtip`.
+
+While it installs, the tab shows each step with its percent: PostgreSQL, the download, GlitchTip's Python packages (on Python 3.13), its database, starting it, and its admin. You can leave the page; the button stays disabled until it is done, so it is never installed twice. If a step fails, its reason shows, the full output is in `/opt/glitchtip/install.log`, and clicking the button again starts that step over.
 
 Every website gets its own GlitchTip project, and its key (DSN) goes into the website's `.env` under the name its SDK reads:
 

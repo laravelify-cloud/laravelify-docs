@@ -3,6 +3,10 @@ title: "Telegram alerts"
 description: "Deploys, downtime, errors, attacks, and server alerts in Telegram."
 ---
 
+<Tip>
+Installed with your Laravelify Cloud install key, or from app.laravelify.cloud? Then alerts already go to the Telegram linked to your Cloud account, through the Laravelify Cloud bot: there is nothing to set up. See [Through Laravelify Cloud](#through-laravelify-cloud).
+</Tip>
+
 ## Connect a bot
 
 <Steps>
@@ -39,3 +43,13 @@ Messages follow Coolify's style: a headline, a short summary, and buttons such a
 - A site is reported down only after **two** failed checks in a row, so a restart during a deploy stays quiet.
 - Error spikes and slow alerts wait 30 minutes before alerting again; attacks from the same IP, 6 hours.
 - Each website sets its own limits under **Monitoring → Monitoring settings**.
+
+## Through Laravelify Cloud
+
+Panels installed from [Laravelify Cloud](/installation/laravelify-cloud), or with its install key, send their alerts through the Laravelify Cloud bot to the Telegram linked to your Cloud account:
+
+- **No bot to make.** The panel holds a token for its own server only, never the bot's token, and its messages can reach only you.
+- **Settings → Telegram bot** says so, with the chat id the messages go to.
+- **app.laravelify.cloud → Notifications** lists every message from the last 30 days (sent, not delivered, or held because Telegram was not linked yet). An account made with a username and password links Telegram there, or from its name menu. One Telegram account belongs to one Cloud account.
+- To use your own bot instead, paste its token on **Settings → Telegram bot** and save.
+

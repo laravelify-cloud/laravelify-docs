@@ -10,7 +10,7 @@ description: "Everything Laravelify does, in one list."
 | Backend | Laravel and plain PHP (PHP 8.0–8.5, Composer, Supervisor workers, optional Reverb), Express, NestJS, and any Node.js server under PM2 |
 | Frontend | React, Vue.js, Angular, Svelte, Astro, and static HTML: built on the server and served by nginx, with client-side route fallback |
 | Full-stack | Next.js, Nuxt, SvelteKit, Laravel + Livewire, Laravel + Inertia |
-| Build settings | Node 20/22/24, npm, pnpm, or Yarn (from the lockfile), custom install, build, and start commands, output folder detection |
+| Build settings | Node 18–24 (24 installed by default, others added the first time a site needs them), npm, pnpm, or Yarn (from the lockfile), custom install, build, and start commands, output folder detection |
 | GitHub | GitHub App (one click) or personal access token, private repositories |
 | Push to deploy | Webhooks with signature checks, per-branch, auto deploy on/off |
 | Deploy log | Live, step by step, kept per deployment; stop a running deploy |
@@ -18,6 +18,8 @@ description: "Everything Laravelify does, in one list."
 | Environment | `.env` editor; saving clears the cached config so changes apply |
 | nginx and processes | Editable nginx, Supervisor, and PM2 files with templates and `nginx -t` checks |
 | Cloudflare tunnels | One tunnel serves many sites; ingress is rebuilt automatically |
+| Environments | Production plus development or staging per website, each on its own branch, address, database, and `.env` ([details](/websites/environments)) |
+| Free addresses | Install with a Laravelify Cloud key and get `https://<name>.laravelify.cloud`, no Cloudflare account ([details](/installation/laravelify-cloud)) |
 
 ## Observe
 
@@ -36,7 +38,7 @@ description: "Everything Laravelify does, in one list."
 
 ## Alert
 
-Telegram alerts (each one optional, each can go to its own topic): deploy started / succeeded / failed / stopped, site down / back up, worker crashed / recovered, disk almost full, server patches, new or returning issue, error spike, slow responses, attack detected, missed heartbeat.
+Telegram alerts (each one optional, each can go to its own topic; through the Laravelify Cloud bot with no setup on Cloud installs): deploy started / succeeded / failed / stopped, site down / back up, worker crashed / recovered, disk almost full, server patches, new or returning issue, error spike, slow responses, attack detected, missed heartbeat.
 
 ## Secure
 
@@ -46,7 +48,7 @@ Telegram alerts (each one optional, each can go to its own topic): deploy starte
 | Secrets behind 2FA | Saved tokens and passwords are hidden; showing one asks for the 6-digit code |
 | Hide from search engines | `noindex` header and `robots.txt` per site |
 | Block crawlers | 403 for search, SEO, and AI crawlers (link previews still work) |
-| Basic auth | Password-protect a site, with paths that stay open (APIs, webhooks) |
+| Basic auth | Protect a site with a username and password, or with your 6-digit authenticator code (the browser is let in for a day), with paths that stay open (APIs, webhooks) ([details](/security/site-security#basic-auth)) |
 | Least privilege | The panel runs as its own user; each website runs as `lfy-<slug>` and cannot read the panel or other sites; only one validated script runs as root ([details](/security/privilege-separation)) |
 
 ## Code
@@ -63,4 +65,4 @@ Telegram alerts (each one optional, each can go to its own topic): deploy starte
 
 ## Tools
 
-File manager (browse, edit, upload, download any file), terminal with autocomplete for Artisan, PM2, and Supervisor commands, phpMyAdmin one-click sign-in, sidebar links, timezone and date format settings.
+Database tool: browse, search and edit MySQL, PostgreSQL, SQLite and MongoDB; **Import SQL** of any size with live progress; empty or drop several tables at once ([details](/tools/database)). File manager (browse, edit, upload, download any file), terminal with autocomplete for Artisan, PM2, and Supervisor commands, phpMyAdmin one-click sign-in, sidebar links, timezone and date format settings.

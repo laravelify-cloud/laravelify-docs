@@ -15,7 +15,16 @@ Answers `403` to search engine, SEO, and AI crawlers: Googlebot, Bingbot, Yandex
 
 ## Basic auth
 
-Asks for a username and password before anyone can open the site. Add paths that stay open (one per line, prefix match), for example APIs and webhooks that servers call without a browser:
+Website → **Security** → **Basic auth** → **Require a password** asks visitors to sign in before they can open the site. Choose how:
+
+| Way | What visitors type | Good for |
+| --- | --- | --- |
+| **Username and password** | A username and password you set | Sharing a staging site with a client or a team |
+| **Authenticator code (2FA)** | The 6-digit code from your authenticator app, in the username **or** the password field | Sites only you open: no password to share or leak |
+
+With the **authenticator code**, a correct code lets that browser in for **24 hours**, from the same IP address, for that website only. The browser asks again after a day, or after it is closed completely. Wrong codes count like the panel's own prompt: after 5 wrong tries the IP waits 15 minutes. It is the same code as for the panel (your admin's authenticator), and nginx asks the panel to check it before every page.
+
+Add paths that stay open (one per line, prefix match), for example APIs and webhooks that servers call without a browser. They work in both ways:
 
 ```text
 /api/
@@ -23,7 +32,7 @@ Asks for a username and password before anyone can open the site. Add paths that
 /socket.io/
 ```
 
-`/.well-known/acme-challenge/` is always open. The password is stored as a SHA-512 crypt hash for nginx, plus encrypted so you can reveal it later with your 2FA code.
+`/.well-known/acme-challenge/` is always open. A password is stored as a SHA-512 crypt hash for nginx, plus encrypted so you can reveal it later with your 2FA code. The authenticator code way stores nothing per site.
 
 ## Blocked IPs
 

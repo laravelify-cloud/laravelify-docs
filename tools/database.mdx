@@ -11,6 +11,32 @@ description: "Browse, search, and change every database on the server: MySQL, Po
 - **Export** downloads a dump (MySQL and PostgreSQL as SQL, SQLite as the database file, MongoDB as a `mongodump` archive), and **Back up** sends one database to your backup storage (it shows under **Backups → Databases**).
 - Sizes and row counts are each engine's own figures and can be a little behind.
 
+## Import a dump
+
+A MySQL database → **Import SQL** loads a `.sql` or `.sql.gz` dump (from mysqldump, phpMyAdmin, DataGrip, TablePlus, or a Laravelify backup) into that database.
+
+<Steps>
+  <Step title="Pick the file">
+    Any size up to 20 GB. It goes up in 8 MB pieces, so it passes every upload limit, and a piece lost to a dropped connection is sent again. The dialog shows how much is uploaded.
+  </Step>
+  <Step title="Empty the database first (optional)">
+    Tick it when the dump creates tables the database already has (for example tables the website's migrations made). Every table is deleted before the import.
+  </Step>
+  <Step title="Watch it run">
+    The import runs in the background: a progress bar shows how much of the file is in and the time left, in every open tab, and you can leave the page. One import runs per database at a time.
+  </Step>
+</Steps>
+
+It is fast: the file is read and unzipped in pieces and streamed into one `mysql` process, with foreign key and unique checks off and one commit at the end, the way DataGrip and mysqldump restores run. A 666 MB dump (59 MB as `.sql.gz`, 98 tables) takes about 30 seconds; 1 GB takes about a minute. When MySQL stops on an error, the task shows its message, with the line of the dump. The uploaded file is deleted afterwards.
+
+<Tip>
+AI assistants import too, with the MCP tool `import-database` (a dump already in the website's folder).
+</Tip>
+
+## Empty or drop several tables
+
+On a database's **Tables** tab, tick tables (the header box ticks every table shown, after filters and search), then **Empty selected** (deletes their rows) or **Drop selected** (deletes the tables). Both ask first, and run with foreign key checks off, so tables that point at each other go together. Back up the database first if you may need the rows again.
+
 ## PostgreSQL, SQLite and MongoDB
 
 - PostgreSQL and SQLite tables open in the same rows grid as MySQL: search, header filters, sorting, adding, changing, and deleting rows (by primary key; a table without one is read-only), and an **SQL** tab.

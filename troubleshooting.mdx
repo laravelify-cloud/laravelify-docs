@@ -98,6 +98,38 @@ description: "Common problems and how to fix them."
     A cached config ignores `.env`. Saving the Environment tab clears it; from the terminal run `php artisan config:clear`.
   </Accordion>
 
+  <Accordion title="phpMyAdmin from the sidebar shows 404 at /laravelify-signon.php">
+    Update to 0.3.0-beta.98 or later. Before, a browser could keep an old redirect of `/phpmyadmin/index.php` and replay it. If it still happens, reload `https://your-panel/phpmyadmin/index.php` with Ctrl+Shift+R once, or clear the site's cached files in the browser.
+  </Accordion>
+
+  <Accordion title="phpMyAdmin is missing from the sidebar">
+    It is installed with MySQL or MariaDB by default since 0.3.0-beta.89. To add it to a server installed without it (keeps everything else):
+
+    ```bash
+    curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_REINSTALL=1 bash -s -- --tools=phpmyadmin,vscode
+    ```
+
+    Answer **Y** to reuse the settings. It then opens at `/phpmyadmin` of the panel.
+  </Accordion>
+
+  <Accordion title="GlitchTip: Python packages could not be installed (glitchtip-rust has no wheel for cp315)">
+    Update to 0.3.0-beta.92 or later and click **Turn on error tracking** again: GlitchTip installs on Python 3.13, and a failed try is started over instead of reused.
+  </Accordion>
+
+  <Accordion title="The panel's address does not open after installing (Cloudflare shows no route)">
+    A tunnel token only connects the server. The route to the panel needs a Cloudflare API token (asked by the installer, optional) or adding it by hand: Zero Trust → Networks → Tunnels → your tunnel → **Routes** → **Add route** → **Published application**, your panel domain → `http://localhost:80`. Or install with a free laravelify.cloud address, where Laravelify Cloud adds the route. With an API token later:
+
+    ```bash
+    read -rsp "Cloudflare API token: " CF && echo && printf '%s' "$CF" > /root/cf-token && unset CF && cd /opt/laravelify && php artisan laravelify:panel-route --token-file=/root/cf-token; rm -f /root/cf-token
+    ```
+
+    The API token is not the tunnel token: create it under My Profile → API Tokens with Account → Cloudflare Tunnel → Edit and Zone → DNS → Edit.
+  </Accordion>
+
+  <Accordion title=".env values have extra quotes, like '&quot;hello@loya.cc&quot;'">
+    Before 0.3.0-beta.99, a value that was already in quotes (`"${APP_NAME}"`) was quoted again, so the quotes became part of the value and `${...}` was not filled in. Write those lines without the outer single quotes, like `MAIL_FROM_ADDRESS=hello@loya.cc` and `VITE_APP_NAME="${APP_NAME}"`, then deploy again (`VITE_*` values are built into the front end).
+  </Accordion>
+
   <Accordion title="I lost my authenticator">
     See [Reset two-factor from the server](/security/authentication#reset-two-factor-from-the-server).
   </Accordion>
