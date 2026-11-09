@@ -37,3 +37,7 @@ These go into the website's own PHP-FPM pool, so they apply to this website only
 | `display_errors` | `off` | `off` | Show errors in pages; only while debugging |
 
 Values are checked twice, by the panel and by the root script that writes the pool, so only these options and plain values are ever written.
+
+## Extensions take a moment
+
+**PHP → PHP extensions** applies to every website on that PHP version. Saving runs in the background and shows each step with its progress, also after a reload or in another tab. Most extensions are Ubuntu packages and take seconds. `sqlsrv` and `pdo_sqlsrv` (Microsoft SQL Server) download Microsoft's driver and are compiled on the server, which can take several minutes on a slow disk. The boxes update when it is done; if something fails, the reason stays on the page.
