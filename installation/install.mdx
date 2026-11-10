@@ -11,20 +11,16 @@ SSH into the server as a user that can use `sudo`, then run:
 
 <InstallCommand />
 
-The installer first asks where the panel lives:
+The installer asks nothing. It installs everything and opens the panel on port **8000** of the server (the next free port when 8000 is taken), and ends with a setup link like `http://203.0.113.10:8000/setup?token=...`.
 
-- **A free `https://<name>.laravelify.cloud` address**: paste the install key from [app.laravelify.cloud](https://app.laravelify.cloud) → Dashboard → **Install from a terminal**. Laravelify Cloud makes the tunnel and its DNS record, so nothing else about Cloudflare is asked. The server keeps an id in `/etc/laravelify/cloud-server-id`, so installing it again gives the same address. Each account has a few free addresses; deleting a server in Laravelify Cloud frees its address.
-- **Your own domain**, on your own Cloudflare tunnel. Then it asks for:
+To start on an address instead of a port, give it one of these as environment variables:
 
-| Prompt | Example | Used for |
-| --- | --- | --- |
-| Cloudflare tunnel token | `eyJh…` | Connects the server to Cloudflare. Asked first and checked; the whole `cloudflared service install …` command works too |
-| Cloudflare API token (optional) | `Gq3…` | Adds the panel's route on the tunnel and its DNS record, and is saved in **Settings → Cloudflare**. A tunnel token cannot do this. Create one under My Profile → API Tokens with Account → Cloudflare Tunnel → Edit and Zone → DNS → Edit. Press Enter to skip and add the route by hand. |
-| Laravelify panel domain | `panel.example.com` | The panel's address |
+- **A free `https://<name>.laravelify.cloud` address**: `LARAVELIFY_CLOUD_KEY=lfy_…`, the install key from [app.laravelify.cloud](https://app.laravelify.cloud) → Dashboard → **Install from a terminal**. Laravelify Cloud makes the tunnel and its DNS record. The server keeps an id in `/etc/laravelify/cloud-server-id`, so installing it again gives the same address.
+- **Your own domain on your own Cloudflare tunnel**: `CLOUDFLARE_TUNNEL_TOKEN=…` and `PANEL_DOMAIN=panel.example.com`, plus an optional `CLOUDFLARE_API_TOKEN` that adds the panel's route and DNS record.
 
 The database password is not asked: the installer makes a random 40-character one for MySQL or MariaDB root (and phpMyAdmin sign-in), PostgreSQL's `postgres`, and MongoDB's `admin`. The panel shows it on **Server → MySQL** after your authenticator code, and you can change it there. To pick your own, run the installer with `MYSQL_ROOT_PASSWORD=...`.
 
-phpMyAdmin is not asked either: it opens at `https://<panel domain>/phpmyadmin`. Change the path later on **Server → phpMyAdmin**.
+phpMyAdmin opens at `/phpmyadmin` of the panel's address. Change the path later on **Server → phpMyAdmin**.
 
 It always installs the **latest release**: the command downloads the installer of the newest GitHub release, and that installer downloads the matching panel.
 
@@ -37,12 +33,12 @@ The installer works through the install one step at a time. Each step shows a sp
 │
 ◇  Settings
 │  Server               Ubuntu 24.04.3 LTS
-│  Panel                https://panel.example.com
+│  Panel                http://203.0.113.10:8000
 │  PHP-FPM              8.3 8.4
 │  Node.js              22 24 (system: 24)
 │  Log                  /var/log/laravelify-install.log
 │
-◆  Downloaded Laravelify 0.3.0-beta.101 4s
+◆  Downloaded Laravelify 0.3.0-beta.102 4s
 ◆  Installing nginx, Redis, Supervisor, Git, and tools 38s
 ◆  Installing PHP 8.3 (FPM, CLI, MySQL, Redis, GD, intl, and more) 51s
 ◆  Installing PHP 8.4 (FPM, CLI, MySQL, Redis, GD, intl, and more) 47s
@@ -63,36 +59,36 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo bash -s -- --php=8.4 -
 | `--php=LIST` | `--php=8.2,8.4` | PHP-FPM versions: 7.4, or 8.0 to 8.5. Websites can pick any other one later: the panel installs it when a site needs it. The panel itself needs 8.3 or newer, so 8.4 is added when none of 8.3, 8.4, 8.5 is chosen. |
 | `--node=LIST` | `--node=22,24` | Node.js majors: 18, 20, 22, 24. Any other release (like 19.0.0) can be set per website and is downloaded on its first deploy. The newest one is the system Node.js (npm, PM2, and sites set to a version that is not installed). |
 | `--databases=LIST` | `--databases=mariadb,postgresql` | Database servers for your websites: `mysql` or `mariadb` (one of the two), `postgresql`, `mongodb`, or `none`. Default: `mysql`. SQLite always works: it is a file, not a server. Without MySQL or MariaDB the panel keeps its own data in SQLite and phpMyAdmin is left out. |
-| `--panel-domain=HOST` | `--panel-domain=panel.example.com` | The panel's domain (otherwise asked) |
+| `--panel-port=PORT` | `--panel-port=9000` | The panel's port until it has a domain. Default: 8000, or the next free one. |
+| `--panel-domain=HOST` | `--panel-domain=panel.example.com` | Start on this domain instead of a port (with a tunnel token, or an A record you make) |
 | `--tools=LIST` | `--tools=phpmyadmin,vscode` | Optional tools: `phpmyadmin`, `vscode` (VS Code in the browser), `glitchtip` (error tracking, set up after the first sign-in), or `none`. Default: `phpmyadmin,vscode` (phpMyAdmin only with MySQL or MariaDB). |
 | `--phpmyadmin-path=PATH` | `--phpmyadmin-path=/db` | phpMyAdmin's path on the panel's address, with `--tools=phpmyadmin`. Default: `/phpmyadmin`. |
 | `--help` | | Prints the options |
 
-The Cloudflare tunnel token has no option on purpose: it is always asked on the server (or given as an environment variable, below), so they never end up in a copied command or your shell history.
+Tokens and keys have no option on purpose: they are environment variables (below), so they never end up in a copied command.
 
 To add a version later, run a repair with the new list, like `curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo LARAVELIFY_REINSTALL=1 bash -s -- --php=8.2,8.3,8.4`. It installs only what is missing.
 
-When it finishes it prints the setup link, like `https://panel.example.com/setup?token=...`. Open it to create the admin account and turn on two-factor authentication. Without the token `/setup` does not open, so nobody who finds a fresh panel first can claim it (the token is also in `/opt/laravelify/.env` as `LARAVELIFY_SETUP_TOKEN`).
+When it finishes it prints the setup link, like `http://203.0.113.10:8000/setup?token=...`. Open it to create the admin account and turn on two-factor authentication. Without the token `/setup` does not open, so nobody who finds a fresh panel first can claim it (the token is also in `/opt/laravelify/.env` as `LARAVELIFY_SETUP_TOKEN`).
 
 ## Running it again
 
-If Laravelify is already installed, running the install command again only updates it. It shows the installed and new version and asks `Update Laravelify only? [Y/n]`. Packages such as PHP, MySQL, Node, and pm2 are not checked or reinstalled. Answer `n`, or run with `LARAVELIFY_REINSTALL=1`, to repair the whole install.
+If Laravelify is already installed, running the install command again only updates it: packages such as PHP, MySQL, Node, and pm2 are not checked or reinstalled. Run with `LARAVELIFY_REINSTALL=1` to repair the whole install.
 
-A repair run skips what is already installed, and nothing needs retyping: it shows the answers from last time and asks whether to use them.
+A repair run skips what is already installed and reuses the settings from last time:
 
 ```text
 Found the settings from a previous install:
   Panel domain:            panel.example.com
   Database password:       ******** (saved)
   Cloudflare tunnel token: ******** (saved)
-Use these settings? [Y/n]
 ```
 
-Press <kbd>Enter</kbd> to reuse them, or type `n` to answer every question again. The answers are kept in `/etc/laravelify/install.env`, readable only by root; the uninstaller removes it.
+The settings are kept in `/etc/laravelify/install.env`, readable only by root; the uninstaller removes it.
 
 ## Unattended install
 
-Every prompt can be given as an environment variable, which is handy for provisioning scripts:
+Every setting can be given as an environment variable, which is handy for provisioning scripts:
 
 ```bash
 curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
@@ -104,11 +100,13 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
 | Variable | Default | Description |
 | --- | --- | --- |
 | `MYSQL_ROOT_PASSWORD` | 40 random characters | The database password (no spaces, quotes, or backslashes) |
-| `PANEL_DOMAIN` | asked | Panel hostname |
+| `PANEL_DOMAIN` | — | Start on this domain instead of a port |
+| `PANEL_PORT` | `8000` | Same as `--panel-port` |
+| `LARAVELIFY_PUBLIC_IP` | looked up | The IP shown in the panel's first address (a server behind NAT) |
 | `PHPMYADMIN_PATH` | `/phpmyadmin` | phpMyAdmin's path on the panel's address |
 | `LARAVELIFY_CLOUD_KEY` | — | An install key from app.laravelify.cloud: a free `<name>.laravelify.cloud` address, no Cloudflare questions |
-| `CLOUDFLARE_TUNNEL_TOKEN` | asked | Tunnel token |
-| `CLOUDFLARE_API_TOKEN` | asked (optional) | A Cloudflare API token (Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit). The installer uses it to add the panel's route and DNS record, and saves it in **Settings → Cloudflare**. Set it empty to skip. |
+| `CLOUDFLARE_TUNNEL_TOKEN` | — | Tunnel token |
+| `CLOUDFLARE_API_TOKEN` | — | A Cloudflare API token (Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit). The installer uses it to add the panel's route and DNS record, and saves it in **Settings → Cloudflare**. Set it empty to skip. |
 | `LARAVELIFY_PHP_VERSIONS` | `8.4` | Same as `--php` |
 | `LARAVELIFY_NODE_VERSIONS` | `24` | Same as `--node` |
 | `LARAVELIFY_DATABASES` | `mysql` | Same as `--databases` |
@@ -140,8 +138,8 @@ curl -fsSL https://cdn.laravelify.cloud/install.sh | sudo \
     - **Supervisor**, which runs the panel's `laravelify-queue` (deploys) and `laravelify-scheduler` (monitoring, alerts), plus each Laravel site's workers.
   </Accordion>
   <Accordion title="Network and security">
-    - **cloudflared**, connected with your tunnel token.
-    - **ufw** firewall: deny incoming by default, allow SSH (22), 80, and 443.
+    - **cloudflared**, connected when you give a tunnel token, or later from the panel.
+    - **ufw** firewall: deny incoming by default, allow SSH (22), 80, 443, and the panel's port.
     - The panel's own user, `laravelify`, with its own PHP-FPM pool. Each website runs as `lfy-<slug>` and cannot read the panel or other websites ([Users and permissions](/security/privilege-separation)).
     - A sudoers rule that lets the panel run only `scripts/host-apply.sh` as root. That script validates every argument and every file before it touches the system.
   </Accordion>
@@ -152,13 +150,22 @@ The panel lives in `/opt/laravelify`. Sites live in `/var/www/{slug}`.
 ## After installing
 
 <Steps>
-  <Step title="Add the public hostnames in Cloudflare">
-    Skip this if you gave the installer a Cloudflare API token: it added them. Otherwise, tunnel → **Routes** → **Add route** → **Published application**: `panel.example.com` → `http://localhost:80`.
-  </Step>
   <Step title="Create the admin and enable 2FA">
-    Open the setup link the installer printed (`https://panel.example.com/setup?token=...`).
+    Open the setup link the installer printed (`http://<server-ip>:8000/setup?token=...`).
+  </Step>
+  <Step title="Give the panel a domain">
+    **Settings → Panel address**. Type the domain, like `panel.example.com`, and choose how it reaches the server:
+
+    - **Cloudflare API**: with a token saved in **Settings → Cloudflare**, Laravelify adds the route on a tunnel you pick, or a proxied A record to the server's IP.
+    - **DNS record**: you make an A record to the server's IP in Cloudflare, Proxied (orange cloud), with SSL/TLS set to Flexible.
+
+    The panel then asks for `https://<domain>` from outside and checks that the answer comes from this panel. If it does not, nothing changes and the port keeps working. If it does, the domain becomes the panel's address, you sign in again there, and the old port only redirects to it. Until then the panel is plain HTTP, so do this before you use it for real work.
   </Step>
   <Step title="Set a Redis password">
     Redis starts without a password. Set one under **Server → Redis**.
   </Step>
 </Steps>
+
+## Hostinger
+
+On a Hostinger VPS you can install from **Docker Manager** instead of SSH: create a project from [`docker-compose.hostinger.yml`](https://raw.githubusercontent.com/laravelify-cloud/laravelify/main/docker-compose.hostinger.yml). It runs the same installer on the server once (it needs privileged access to the host for that) and then stops. Its logs end with the setup link. Use a fresh Ubuntu 24.04 VPS: Laravelify takes ports 80 and 8000.

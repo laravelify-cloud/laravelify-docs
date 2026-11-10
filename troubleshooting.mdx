@@ -117,7 +117,7 @@ description: "Common problems and how to fix them."
   </Accordion>
 
   <Accordion title="The panel's address does not open after installing (Cloudflare shows no route)">
-    A tunnel token only connects the server. The route to the panel needs a Cloudflare API token (asked by the installer, optional) or adding it by hand: Zero Trust → Networks → Tunnels → your tunnel → **Routes** → **Add route** → **Published application**, your panel domain → `http://localhost:80`. Or install with a free laravelify.cloud address, where Laravelify Cloud adds the route. With an API token later:
+    A tunnel token only connects the server. The route to the panel needs a Cloudflare API token (in Settings → Cloudflare, or `CLOUDFLARE_API_TOKEN` at install) or adding it by hand: Zero Trust → Networks → Tunnels → your tunnel → **Routes** → **Add route** → **Published application**, your panel domain → `http://localhost:80`. Or install with a free laravelify.cloud address, where Laravelify Cloud adds the route. With an API token later:
 
     ```bash
     read -rsp "Cloudflare API token: " CF && echo && printf '%s' "$CF" > /root/cf-token && unset CF && cd /opt/laravelify && php artisan laravelify:panel-route --token-file=/root/cf-token; rm -f /root/cf-token

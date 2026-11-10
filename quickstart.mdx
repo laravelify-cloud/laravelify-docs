@@ -5,12 +5,12 @@ description: "Install Laravelify, sign in, and deploy your first site."
 
 import InstallCommand from '/snippets/install-command.mdx';
 
-Once you have a fresh Ubuntu server and a domain on Cloudflare, this guide takes you from an empty server to a deployed site that redeploys on every push.
+Once you have a fresh Ubuntu server (and, for HTTPS, a domain on Cloudflare), this guide takes you from an empty server to a deployed site that redeploys on every push.
 
 ## Prerequisites
 
 - An Ubuntu 22.04, 24.04, or 26.04 server with root access (see [requirements](/installation/requirements)).
-- A domain on Cloudflare, and a **Cloudflare tunnel token** (Zero Trust → Networks → Tunnels → Create a tunnel).
+- A domain on Cloudflare, to give the panel and your sites HTTPS. Not needed to install.
 - A Laravel (PHP 8.0+) or Next.js app in a GitHub repository.
 
 ## Install and sign in
@@ -21,10 +21,10 @@ Once you have a fresh Ubuntu server and a domain on Cloudflare, this guide takes
 
     <InstallCommand />
 
-    It first asks for a free `<name>.laravelify.cloud` address (with your install key from app.laravelify.cloud → Dashboard) or your own domain. For your own domain it asks for the Cloudflare tunnel token (checked at once), an optional Cloudflare API token, and the panel domain (like `panel.example.com`). With the API token it adds the panel's route and DNS record in Cloudflare for you. The database password is made for you. Then it installs everything. This takes 5–10 minutes. See [what it installs](/installation/install).
+    The installer asks nothing. It installs everything in 3–10 minutes and prints a setup link like `http://203.0.113.10:8000/setup?token=…`. See [what it installs](/installation/install).
   </Step>
-  <Step title="Point the domains at the tunnel">
-    Skip this if you gave the installer an API token. Otherwise, in Cloudflare Zero Trust open your tunnel → **Routes** → **Add route** → **Published application**, and send the panel domain to `http://localhost:80`.
+  <Step title="Give the panel a domain">
+    Open the setup link and create the admin. Then **Settings → Panel address**: type `panel.example.com` and choose **Cloudflare API** (Laravelify makes the record) or **DNS record** (you make a proxied A record to the server's IP). The domain is tested over HTTPS first; after the move, sign in again on the new address.
   </Step>
   <Step title="Create the admin account">
     Open the setup link the installer printed (`https://panel.example.com/setup?token=...`). Enter your name, email, and password. There is only one admin account, and nobody can register after it exists.
