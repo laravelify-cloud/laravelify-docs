@@ -80,13 +80,17 @@ With auto-unseal on, the unseal keys sit on the same server as Vault (encrypted 
 
 ## Open it on a domain
 
-MinIO's console and Vault's UI can open on a domain. Click **Domain** on the card and enter:
+MinIO's console and Vault's UI can open on a domain. On the card, click **More → Open on a domain** and enter:
 
 - the domain, like `minio.example.com`
 - a Cloudflare tunnel, for HTTPS. With an API token in **Settings → Cloudflare**, Laravelify adds the tunnel route and the DNS record.
 - a basic auth user and password (12 characters or more)
 
 nginx then asks for that user and password before anything reaches the plugin. PostgreSQL and Redis have no web page, so they have no domain.
+
+### MinIO's S3 API on a public domain
+
+Image links and your apps' S3 clients need MinIO's **S3 API** without a password. Click **More → S3 API on a domain** and enter a domain like `s3.example.com` and a tunnel. It has no basic auth: MinIO's own access keys decide who can write, and a bucket's policy decides who can read. Set the console on another domain, like `s3-ui.example.com`, behind a password. Both show on MinIO's card.
 
 ## Back up plugins
 
