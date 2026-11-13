@@ -9,6 +9,7 @@ Pick what you are deploying when you add a website. Laravelify groups the choice
 | --- | --- | --- |
 | **PHP-FPM** | nginx → PHP-FPM, with Supervisor workers for Laravel | Laravel, PHP |
 | **PM2** | nginx → a server kept running by PM2 | Express, NestJS, Node.js, Next.js, Nuxt, SvelteKit, Django, Flask, FastAPI, Go, Spring Boot, ASP.NET Core, Bun |
+| **Docker** | nginx → a container built from your Dockerfile | Any app with a Dockerfile |
 | **nginx** | the app is built once, nginx serves the files | React, Vue.js, Angular, Svelte, Astro, Hugo, Gatsby, Docusaurus, VitePress, Eleventy, Static HTML |
 
 ## What you can deploy
@@ -51,6 +52,11 @@ Pick what you are deploying when you add a website. Laravelify groups the choice
     | | Runs on | Best for |
     | --- | --- | --- |
     | **ASP.NET Core** | .NET 8, 9, or 10 | Business apps and APIs: minimal APIs, MVC, Razor, Blazor Server |
+  </Tab>
+  <Tab title="Any language">
+    | | Built with | Best for |
+    | --- | --- | --- |
+    | **Dockerfile** | Docker, on the server | Apps in a language without a type here, or that already ship a Dockerfile. See [Dockerfile sites](/websites/docker) |
   </Tab>
 </Tabs>
 
@@ -131,7 +137,7 @@ Point the frontend at the backend's domain (a build-time variable such as `VITE_
     | Go | `go mod download` | `go build -o .laravelify-app .` | `./.laravelify-app` |
     | Bun | `bun install` | none | `bun run start` |
     | Spring Boot | none | `./mvnw package`, `./gradlew bootJar`, or `mvn package` (tests skipped) | `java -jar` the built jar, on `127.0.0.1:$PORT` |
-    | ASP.NET Core | `dotnet restore` | `dotnet publish -c Release` | `dotnet` the published `<Project>.dll` (`ASPNETCORE_URLS` set to the port) |
+    | ASP.NET Core | `dotnet restore` | `dotnet publish -c Release` | `dotnet` the published web project's `.dll` (`ASPNETCORE_URLS` set to the port) |
 
     Each Python site gets its own virtual environment in `.venv`, made with [uv](https://docs.astral.sh/uv/).
   </Tab>
@@ -194,7 +200,8 @@ The **Environment** tab writes the site's `.env` file.
 - **FastAPI:** the app object `app` in `main.py`, or set the start command.
 - **Go:** a `go.mod`; the program listens on `127.0.0.1:$PORT`.
 - **Bun:** a `start` script in `package.json`, listening on `process.env.PORT`.
-- **Spring Boot:** a `pom.xml` or `build.gradle` that builds an executable jar (the Spring Boot plugin does). The Java version comes from `<java.version>` or the Gradle toolchain.
-- **ASP.NET Core:** one `.csproj` in the repository root; the app reads its port from `ASPNETCORE_URLS` (the default).
+- **Spring Boot:** a `pom.xml` or `build.gradle` that builds an executable jar (the Spring Boot plugin does). The Java version comes from `<java.version>` or the Gradle toolchain. See [Spring Boot sites](/websites/spring-boot).
+- **ASP.NET Core:** a `.csproj` or `.sln` in the repository root (or a `Program.cs`). The .NET version comes from `<TargetFramework>` (`net9.0` → .NET 9.0). With a solution, the published project that runs on ASP.NET Core is started. The site's `.env` sets `ASPNETCORE_URLS=http://127.0.0.1:<port>` and `ASPNETCORE_ENVIRONMENT=Production`.
+- **Dockerfile:** a `Dockerfile` in the repository root. See [Dockerfile sites](/websites/docker).
 - **Hugo:** a `hugo.toml` (or `config.toml`) in the repository root.
 - **Astro:** static output (the default). Server rendering needs the Node adapter, which fits **Node.js** with start command `node dist/server/entry.mjs`.

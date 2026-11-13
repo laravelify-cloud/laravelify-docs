@@ -97,6 +97,8 @@
           "websites/example-projects",
           "websites/laravel",
           "websites/nextjs",
+          "websites/spring-boot",
+          "websites/docker",
           "websites/php-configuration",
           "websites/github",
           "websites/environment-nginx-processes",
@@ -136,6 +138,7 @@
           "tools/database",
           "tools/logs-and-health",
           "tools/server-services",
+          "tools/plugins",
           "tools/settings"
         ]
       },

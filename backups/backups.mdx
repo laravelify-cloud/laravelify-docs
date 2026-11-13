@@ -78,6 +78,8 @@ Some tables are not worth backing up: cache, sessions, logs, queues, or data tha
 
 In the list, each schedule is one row, like **FULL BACKUP · 3 dumps, one per database · 2 runs**, with the newest run's dump of every database under it.
 
+[Plugins](/tools/plugins) are listed with the databases as `plugin:postgres`, `plugin:redis`, `plugin:minio`, and `plugin:vault`, and **All databases** includes them. PostgreSQL is saved with `pg_dumpall`; the others as a gzipped copy of their data volume. Plugin backups are restored by hand.
+
 ## 3. Back up folders
 
 **Backups, Files, New schedule.** The picker works like the file manager: browse `/var/www`, tick folders and files, and press **Add to backup** or **Skip**. Each row shows whether it is **Included** or **Skipped**, so you can open a site, tick `node_modules` and `.git`, and skip them in one go.

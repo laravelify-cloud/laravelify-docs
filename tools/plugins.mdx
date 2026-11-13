@@ -1,0 +1,112 @@
+---
+title: "Plugins"
+description: "PostgreSQL, MySQL, MongoDB, Redis, MinIO, HashiCorp Vault, and GlitchTip in one click, run with Docker on 127.0.0.1."
+---
+
+The **Plugins** page (sidebar → Infrastructure → Plugins) installs the services your apps need next to them on the same server: a database, a cache, object storage, and a secrets store. Each plugin runs with Docker Compose and starts again on its own after a reboot.
+
+| Plugin | What it is | Port (first free one from) |
+| --- | --- | --- |
+| **PostgreSQL** | PostgreSQL 17 | `5433` |
+| **Redis** | Redis 7, with a password and append-only persistence | `6380` |
+| **MinIO** | S3-compatible object storage, with its web console | `9000` (API), `9001` (console) |
+| **HashiCorp Vault** | Secrets store, initialized and unsealed for you | `8200` |
+| **MySQL** | MySQL 8.4 with one database, apart from the server's own MySQL | `3307` |
+| **MongoDB** | MongoDB 8 with sign-in on and one database | `27018` |
+| **GlitchTip** | The panel's built-in error tracking (not Docker): every website gets a project and its DSN. See [GlitchTip](/monitoring/error-tracking) | `/glitchtip` |
+
+## Install a plugin
+
+Click **Install** on its card. The install runs in the background, with each step on the page:
+
+<Steps>
+  <Step title="Docker">
+    The first install puts Docker Engine on the server from Docker's official apt repository.
+  </Step>
+  <Step title="Ports">
+    Free ports are picked the same way as for websites. A port a plugin holds is never given to a website.
+  </Step>
+  <Step title="Passwords">
+    Strong passwords (and MinIO's keys) are generated and stored encrypted with the panel's key.
+  </Step>
+  <Step title="Start">
+    The compose file is written to `/opt/laravelify-plugins/<name>` (root only) and the service starts.
+  </Step>
+</Steps>
+
+When it is done, the panel shows the credentials **once**, with copy buttons. Save them in your password manager, then click **I saved them**. Linked websites get them in their `.env` either way.
+
+Installing again (after an error, for example) keeps the plugin's data, ports, and passwords.
+
+## What keeps it safe
+
+- Every port is bound to `127.0.0.1`. Nothing is reachable from the internet unless you give the plugin a [domain](#open-it-on-a-domain).
+- Data lives in named Docker volumes. Plugins cannot mount folders of the server.
+- Before anything starts, the server checks the compose file: no privileged containers, no host network, no Docker socket, no builds, no extra capabilities (Vault's `IPC_LOCK` is the one exception).
+- Passwords are never written to a log, a task message, or an error. The files that hold them on the server are readable by root only.
+
+## Link a plugin to a website
+
+Pick a website under **Linked websites** on the card and click **Link**. The plugin's variables are written into the website's `.env` and its processes restart:
+
+| Plugin | Variables |
+| --- | --- |
+| PostgreSQL | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DATABASE_URL`, `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` |
+| Redis | `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` |
+| MinIO | `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
+| Vault | `VAULT_ADDR`, `VAULT_TOKEN` |
+| MySQL | `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DATABASE_URL`, `SPRING_DATASOURCE_*` |
+| MongoDB | `MONGODB_URI`, `MONGO_URL`, `SPRING_DATA_MONGODB_URI` |
+
+GlitchTip connects every website by itself. VS Code is not a plugin: every website has its own (and Workspaces open several together). The PostgreSQL and MySQL plugins also show on the **Database** page.
+
+Unlinking removes exactly those variables again.
+
+<Warning>
+Linking PostgreSQL replaces the website's own `DB_*` settings, such as a MySQL database the panel made for it. `VAULT_TOKEN` is Vault's root token: fine for one app on your own server, but create a token with a narrower policy for anything shared.
+</Warning>
+
+## Vault: sealed and unsealed
+
+Vault keeps its data encrypted and **seals** itself every time it restarts. While sealed it answers every request with an error.
+
+- On install, the panel initializes Vault with 5 unseal keys (3 are needed) and a root token, stores them encrypted, and unseals it.
+- The card shows **Sealed** or **Unsealed**. Click **Unseal** after a restart.
+- **Unseal on its own after a restart or reboot** checks every minute and unseals Vault for you.
+
+<Warning>
+With auto-unseal on, the unseal keys sit on the same server as Vault (encrypted with the panel's key). Anyone who gets the server and the panel gets your secrets too. Leave it off when that matters, and unseal by hand.
+</Warning>
+
+## Open it on a domain
+
+MinIO's console and Vault's UI can open on a domain. Click **Domain** on the card and enter:
+
+- the domain, like `minio.example.com`
+- a Cloudflare tunnel, for HTTPS. With an API token in **Settings → Cloudflare**, Laravelify adds the tunnel route and the DNS record.
+- a basic auth user and password (12 characters or more)
+
+nginx then asks for that user and password before anything reaches the plugin. PostgreSQL and Redis have no web page, so they have no domain.
+
+## Back up plugins
+
+Plugins back up with your databases, to your [backup storage](/backups/backups):
+
+- **Back up** on the card saves one copy now.
+- A database backup schedule lists the plugins (`plugin:postgres`, `plugin:minio`, …). **All databases** includes them.
+
+PostgreSQL is saved with `pg_dumpall`, MySQL with `mysqldump`, and MongoDB with `mongodump --archive`. Redis, MinIO, and Vault are saved as a gzipped copy of their data volume.
+
+<Note>
+Plugin backups are restored by hand: download the copy, then load it with `psql` for PostgreSQL, or unpack it into the plugin's data volume while the plugin is stopped.
+</Note>
+
+## Start, stop, logs, uninstall
+
+- **Start**, **Stop**, and **Restart** run in the background.
+- **Logs** shows the last lines of the plugin's containers, with passwords blanked.
+- **Uninstall** asks you to type the plugin's name. It stops and removes the containers, **deletes the data volumes**, removes its domain, and unlinks every website.
+
+## From an AI agent
+
+The [MCP server](/tools/mcp) has `list-plugins`, `install-plugin`, `plugin-status`, `unseal-vault`, and `link-plugin`. None of them ever returns a password, token, or unseal key.

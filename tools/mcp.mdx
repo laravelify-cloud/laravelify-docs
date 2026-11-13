@@ -93,7 +93,11 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 | `list-files`, `read-file` | Browse a site's folder and read text files (`.env` only through `get-environment`) |
 | `upload-file` | Put a file the repository does not carry into the site (like a Firebase key in `storage/app/private`), or unpack a `.zip`, `.tar.gz`, or `.tgz` into a folder. Up to 20 MB |
 | `delete-file` | Move a file or folder to the panel's Trash, where it can be restored |
-| `import-database`, `get-task` | Import a `.sql` or `.sql.gz` dump from the site's folder into its database as the site's own database user, in the background |
+| `import-database`, `get-task` | Import a `.sql` or `.sql.gz` dump from the site's folder into its MySQL or PostgreSQL database as the site's own database user, in the background |
+| **Plugins** | |
+| `list-plugins`, `install-plugin` | The plugins on offer and which are installed; install one in the background (follow it with `get-task`) |
+| `plugin-status`, `unseal-vault` | A plugin's state, ports, domain, linked websites and (for Vault) seal, with its logs if asked; unseal Vault with the saved keys |
+| `link-plugin` | Write a plugin's variables into a website's `.env` (or remove them). No plugin tool returns a password, token, or unseal key |
 | **Backups** | |
 | `list-backups`, `run-backup` | See the S3 backups and start one (or a full backup) now |
 | **Clean up** | |

@@ -1,0 +1,55 @@
+---
+title: "Dockerfile sites"
+description: "Any app with a Dockerfile, built on the server and run as a container on 127.0.0.1."
+---
+
+Choose the **Dockerfile** type for an app in a language Laravelify has no type for, or one that already ships a `Dockerfile`. Loading a repository picks it when the Dockerfile is the only thing Laravelify recognises; a Next.js or Spring Boot repository that also has a Dockerfile keeps its own type.
+
+## Deploy steps
+
+<Steps>
+  <Step title="Docker">
+    Installed the first time a Dockerfile site (or a [plugin](/tools/plugins)) needs it.
+  </Step>
+  <Step title="Build">
+    `docker build` of the `Dockerfile` at the top of the repository, with the site's folder as the build context. The image is `lfy-site-<slug>:latest`.
+  </Step>
+  <Step title="Run">
+    The container `lfy-site-<slug>` starts with `--restart unless-stopped`, so it comes back after a reboot. nginx proxies the domain to it.
+  </Step>
+</Steps>
+
+## Ports
+
+The container is published on `127.0.0.1:<the site's port>` only. Inside the container the app listens on the Dockerfile's first `EXPOSE`, or on `PORT` when there is none. `PORT` is also set inside the container to that port.
+
+```dockerfile
+FROM python:3.12-alpine
+WORKDIR /app
+COPY . .
+EXPOSE 8080
+CMD ["python", "server.py"]
+```
+
+Listen on `0.0.0.0` inside the container (only the published port on `127.0.0.1` is reachable from outside).
+
+## Environment
+
+The site's `.env` is passed to the container. Saving it starts the container again with the new values.
+
+<Note>
+Docker reads `.env` values literally: `KEY="value"` reaches the app with the quotes. Write `KEY=value`.
+</Note>
+
+## What keeps it safe
+
+- Site users never get access to Docker (that would be the same as root). The image is built and the container run by the panel's root helper.
+- The container gets no folders of the server, `no-new-privileges`, a 2 GB memory limit, and log files capped at 30 MB.
+
+## Restart, logs, off, delete
+
+**Restart**, the logs, turning the site off, and deleting it work on the container, from the panel and from the [MCP server](/tools/mcp). Deleting the site also removes its image.
+
+## Good to know
+
+A container cannot reach services that listen on the server's `127.0.0.1`, such as MySQL or the plugins. Use a database inside your own setup, or a type that runs on the server itself (like Spring Boot or Node.js) when the app needs them.

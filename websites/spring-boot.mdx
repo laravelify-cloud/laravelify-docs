@@ -1,0 +1,49 @@
+---
+title: "Spring Boot sites"
+description: "A Maven or Gradle app on its own Java version, kept running by PM2, with its services from Plugins."
+---
+
+A Spring Boot website is built on the server with Maven or Gradle, then its jar runs under PM2 with the site's Java version. nginx proxies the domain to `127.0.0.1:{port}`.
+
+## Prepare your app
+
+- A `pom.xml` or `build.gradle` that builds an executable jar. The Spring Boot plugin does this.
+- The Java version comes from `<java.version>` in `pom.xml`, or the Gradle toolchain (`JavaLanguageVersion.of(21)`). Java 17, 21, and 25 are offered; Temurin JDKs are downloaded the first time a site needs one.
+- Optional but recommended: `spring-boot-starter-actuator`, so the panel can read `/actuator/health`.
+
+## Deploy steps
+
+<Steps>
+  <Step title="Build">
+    `./mvnw package`, `./gradlew bootJar`, or `mvn package`, with tests skipped.
+  </Step>
+  <Step title="Start">
+    `java -jar` the built jar with `--server.address=127.0.0.1 --server.port=$PORT`. The site's `.env` also has `SERVER_PORT` and `SERVER_ADDRESS`, which Spring Boot reads on its own.
+  </Step>
+  <Step title="Wait for it">
+    A JVM takes a while to start, so the deploy waits up to 2 minutes for the app to answer and writes what `/actuator/health` says in the deploy log: `UP`, `DOWN` with the parts that are down (like `db`), or a hint to add the actuator. A slow start is a warning, not a failed deploy.
+  </Step>
+</Steps>
+
+The **Health** page of the site has a **Spring Boot health** check that reads the same endpoint.
+
+## PostgreSQL, Redis, MinIO, and Vault
+
+Install what the app needs on the [Plugins](/tools/plugins) page, then link each plugin to the website. Their variables go into the site's `.env`:
+
+| Plugin | What Spring Boot reads |
+| --- | --- |
+| PostgreSQL | `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` |
+| Redis | `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` (map them in `application.properties`: `spring.data.redis.host=${REDIS_HOST}` …) |
+| MinIO | `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
+| Vault | `VAULT_ADDR`, `VAULT_TOKEN` (Spring Cloud Vault: `spring.cloud.vault.uri=${VAULT_ADDR}`, `spring.cloud.vault.token=${VAULT_TOKEN}`) |
+
+Linking restarts the app, so it picks the new values up right away.
+
+<Tip>
+A Next.js frontend for the same API is a second website of type **Next.js**. Point it at the API's domain (for example `NEXT_PUBLIC_API_URL=https://api.example.com` in its `.env`).
+</Tip>
+
+## Moving a database
+
+Put a plain-format `pg_dump` (`.sql` or `.sql.gz`) in the site folder and import it into the database the panel made for the site with the [MCP](/tools/mcp) tool `import-database`. It runs as the site's own database role, so it can only change that database. For the PostgreSQL plugin, use `psql` against its port.
