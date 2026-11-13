@@ -98,6 +98,7 @@ Claude also offers a ready-made **deploy-project** prompt: give it a repository 
 | `list-plugins`, `install-plugin` | The plugins on offer and which are installed; install one in the background (follow it with `get-task`) |
 | `plugin-status`, `unseal-vault` | A plugin's state, ports, domain, linked websites and (for Vault) seal, with its logs if asked; unseal Vault with the saved keys |
 | `link-plugin` | Write a plugin's variables into a website's `.env` (or remove them). No plugin tool returns a password, token, or unseal key |
+| `set-plugin-domain` | Open MinIO's console or Vault's UI on a domain behind basic auth (the password is stored hashed, never returned), or MinIO's S3 API on a public domain (`kind: api`) |
 | **Backups** | |
 | `list-backups`, `run-backup` | See the S3 backups and start one (or a full backup) now |
 | **Clean up** | |
